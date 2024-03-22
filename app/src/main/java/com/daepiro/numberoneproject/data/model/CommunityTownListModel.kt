@@ -7,7 +7,7 @@ data class CommunityTownListModel(
     val last: Boolean=true,
     val number: Int=0,
     val numberOfElements: Int=0,
-    val pageable: String?=null,
+    val pageable: String="" ,
     val size: Int=0,
     val sort: Sort = Sort()
 )
@@ -32,4 +32,19 @@ data class Sort(
     val empty: Boolean=true,
     val sorted: Boolean=true,
     val unsorted: Boolean=true
+)
+
+data class PageableCommunity(
+    val offset: Int = 0,
+    val sort: Sort2 = Sort2(),
+    val pageNumber: Int = 0,
+    val pageSize: Int = 0,
+    val paged: Boolean = true,
+    val unpaged: Boolean = true,
+)
+
+data class Sort2(
+    val empty: Boolean = true,
+    val sorted: Boolean = true,
+    val unsorted: Boolean = true,
 )

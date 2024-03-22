@@ -25,8 +25,10 @@ import okhttp3.MediaType.Companion.parse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.http.Url
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -55,16 +57,35 @@ class CommunityRepositoryImpl @Inject constructor(
     override suspend fun getTownCommentDetail(token:String,articleId:Int):ApiResult<CommunityTownDetailData>{
         return service.getTownCommentDetail(token,articleId)
     }
-    override suspend fun setTownDetail(token:String, title:String, content:String, articleTag:String,imageList:List<MultipartBody.Part>,longtitude:Double, latitude:Double,regionAgreementCheck:Boolean)
-    :ApiResult<CommentWritingResponse>{
-        val titleRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(),title)
-        val contentRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(),content)
-        val articleTagRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(),articleTag)
-        val longtitudeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(),longtitude.toString())
-        val latitudeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(),latitude.toString())
-        val regionAgreementCheckRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), regionAgreementCheck.toString())
-        Log.d("CommunityRepositoryImpl", "after: ${imageList?.size}")
-        return service.setTownDetail(token,titleRequestBody,contentRequestBody,articleTagRequestBody,imageList,longtitudeRequestBody,latitudeRequestBody,regionAgreementCheckRequestBody)
+    override suspend fun setTownDetail(
+        token: String,
+        title: String,
+        content: String,
+        articleTag: String,
+        imageList: List<MultipartBody.Part>,
+        longtitude: Double,
+        latitude: Double,
+        regionAgreementCheck: Boolean
+    )
+    : ApiResult<CommentWritingResponse> {
+
+       val map = HashMap<String, RequestBody>()
+        var title = RequestBody.create("text/plain".toMediaTypeOrNull(), title)
+        var content = RequestBody.create("text/plain".toMediaTypeOrNull(), content)
+        var articleTag = RequestBody.create("text/plain".toMediaTypeOrNull(), articleTag)
+        var longitude = RequestBody.create("text/plain".toMediaTypeOrNull(), longtitude.toString())
+        var latitude = RequestBody.create("text/plain".toMediaTypeOrNull(), latitude.toString())
+        var regionAgreementCheck = RequestBody.create("text/plain".toMediaTypeOrNull(), regionAgreementCheck.toString())
+
+        map["title"] = title
+        map["content"] = content
+        map["articleTag"] = articleTag
+        map["longitude"] = longitude
+        map["latitude"] = latitude
+        map["regionAgreementCheck"] = regionAgreementCheck
+
+        return service.setTownDetail(token,imageList, map)
+
     }
 
     override suspend fun getTownReply(
@@ -117,5 +138,14 @@ class CommunityRepositoryImpl @Inject constructor(
     //재난상황 커뮤니티 댓글작성
     override suspend fun postDisasterConversation(token:String, body: ConversationRequestBody):ApiResult<Unit>{
         return service.postDisasterConversation(token,body)
+    }
+
+    fun File.getMimeType(): MediaType?{
+        val extension = this.extension.toLowerCase()
+        return when(extension){
+            "jpg", "jpeg" -> "image/jpeg"
+            "png" -> "image/png"
+            else -> "application/octet-stream"
+        }.toMediaTypeOrNull()
     }
 }

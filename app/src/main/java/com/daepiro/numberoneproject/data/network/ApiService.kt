@@ -141,18 +141,12 @@ interface ApiService {
         @Path("articleid") articleid:Int
     ):ApiResult<CommunityTownDetailData>
 
-    //커뮤니티 동네생활 게시글 작성
     @Multipart
     @POST("/api/articles")
     suspend fun setTownDetail(
         @Header("Authorization") token:String,
-        @Part("title") title:RequestBody,
-        @Part("content") content:RequestBody,
-        @Part("articleTag") articleTag:RequestBody,
         @Part imageList: List<MultipartBody.Part>,
-        @Part("longitude") longitude:RequestBody?,
-        @Part("latitude") latitude:RequestBody?,
-        @Part("regionAgreementCheck") regionAgreementCheck:RequestBody
+        @PartMap data: HashMap<String, RequestBody>
     ):ApiResult<CommentWritingResponse>
 
     //커뮤니티 동네생활 댓글 조회

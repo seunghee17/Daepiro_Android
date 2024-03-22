@@ -156,7 +156,7 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun postComment(title:String,content:String,articleTag:String,imageList:List<MultipartBody.Part>,longtitude:Double,latitude:Double,regionAgreementCheck:Boolean){
+    fun postComment(title:String, content:String, articleTag:String, imageList: List<MultipartBody.Part>, longtitude:Double, latitude:Double, regionAgreementCheck:Boolean){
         viewModelScope.launch {
             val token = "Bearer ${tokenManager.accessToken.first()}"
             setCommunityWritingUseCase.invoke(token,title,content,articleTag,imageList,longtitude,latitude,regionAgreementCheck)
