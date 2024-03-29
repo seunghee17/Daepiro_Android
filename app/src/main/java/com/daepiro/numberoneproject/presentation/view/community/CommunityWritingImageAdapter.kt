@@ -11,6 +11,7 @@ import com.daepiro.numberoneproject.R
 
 class CommunityWritingImageAdapter(private var images: MutableList<String>)
     : RecyclerView.Adapter<CommunityWritingImageAdapter.ImageViewHolder>() {
+    var onImageRemoved: ((String) -> Unit)? = null
     class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView : ImageView = view.findViewById(R.id.image)
         val deleteBtn : ImageButton = view.findViewById(R.id.deleteBtn)
@@ -29,8 +30,10 @@ class CommunityWritingImageAdapter(private var images: MutableList<String>)
         val imageUrl = images[position]
         Glide.with(holder.imageView.context).load(imageUrl).into(holder.imageView)
         holder.deleteBtn.setOnClickListener{
-            images.removeAt(position)
+            val removedUri = images.removeAt(position)
             notifyItemRemoved(position)
+            notifyItemRangeChanged(position, itemCount)
+            onImageRemoved?.invoke(removedUri)
         }
     }
 

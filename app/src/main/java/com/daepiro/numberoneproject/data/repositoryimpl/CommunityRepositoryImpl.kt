@@ -2,6 +2,9 @@ package com.daepiro.numberoneproject.data.repositoryimpl
 
 import android.net.Uri
 import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.daepiro.numberoneproject.data.model.CommentWritingRequestBody
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
 import com.daepiro.numberoneproject.data.model.CommunityDisasterDetailResponse
@@ -15,11 +18,13 @@ import com.daepiro.numberoneproject.data.model.CommunityTownReplyDeleteResponse
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyRequestBody
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyResponse
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyResponseModel
+import com.daepiro.numberoneproject.data.model.Content
 import com.daepiro.numberoneproject.data.model.ConversationRequestBody
 import com.daepiro.numberoneproject.data.model.GetRegionResponse
 import com.daepiro.numberoneproject.data.network.ApiResult
 import com.daepiro.numberoneproject.data.network.ApiService
 import com.daepiro.numberoneproject.domain.repository.CommunityRepository
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.parse
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -44,14 +49,19 @@ class CommunityRepositoryImpl @Inject constructor(
     }
     override suspend fun getTownCommentList(
         token:String,
-        size:Int,
         tag:String?,
-        lastArticleId:Int?,
         longtitude: Double?,
         latitude: Double?,
         regionLv2:String
-    ):ApiResult<CommunityTownListModel>{
-        return service.getTownCommentList(token,size,tag,lastArticleId,longtitude,latitude,regionLv2)
+    ): Flow<PagingData<Content>> {
+        return Pager(
+            config = PagingConfig(enablePlaceholders = false, pageSize = 10),
+            pagingSourceFactory = {
+                CommunityPagingSource(
+                    service, token, tag ?: "", longtitude, latitude, regionLv2
+                )
+            }
+        ).flow
     }
 
     override suspend fun getTownCommentDetail(token:String,articleId:Int):ApiResult<CommunityTownDetailData>{

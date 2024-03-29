@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
 import com.daepiro.numberoneproject.data.model.CommunityDisasterDetailResponse
 import com.daepiro.numberoneproject.data.model.CommunityHomeDisasterResponse
@@ -15,6 +17,7 @@ import com.daepiro.numberoneproject.data.model.CommunityTownDetailData
 import com.daepiro.numberoneproject.data.model.CommunityTownListModel
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyRequestBody
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyResponse
+import com.daepiro.numberoneproject.data.model.Content
 import com.daepiro.numberoneproject.data.model.ConversationRequestBody
 import com.daepiro.numberoneproject.data.model.GetRegionResponse
 import com.daepiro.numberoneproject.data.network.onFailure
@@ -34,11 +37,15 @@ import com.daepiro.numberoneproject.domain.usecase.SetCommunityWritingUseCase
 
 import com.daepiro.numberoneproject.presentation.util.TokenManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -68,8 +75,11 @@ class CommunityViewModel @Inject constructor(
 
 ) : ViewModel() {
 
-    private val _townCommentList = MutableStateFlow(CommunityTownListModel())
-    val townCommentList=_townCommentList.asStateFlow()
+    private val _tag = MutableStateFlow<String?>("")
+    private val _longtitude = MutableStateFlow<Double?>(0.0)
+    private val _latitude = MutableStateFlow<Double?>(0.0)
+    private val _regionLv2 = MutableStateFlow<String>("")
+
 
     private val _townDetail = MutableStateFlow(CommunityTownDetailData())
     val townDetail=_townDetail.asStateFlow()
@@ -95,6 +105,14 @@ class CommunityViewModel @Inject constructor(
     private val _disasterHome = MutableStateFlow(CommunityHomeDisasterResponse())
     val disasterHome = _disasterHome.asStateFlow()
 
+    private val _listLoadingState = MutableStateFlow(true)
+    val listLoadingState = _listLoadingState.asStateFlow()
+
+    private val _townList = MutableStateFlow(GetRegionResponse())
+    val townList = _townList.asStateFlow()
+
+     var isLastLoaded = false
+
     fun updateAdditionalType(input:String){
         _additionalState.value= input
     }
@@ -104,8 +122,7 @@ class CommunityViewModel @Inject constructor(
     fun updateContent(input:String){
         _replycontent.value = input
     }
-    private val _townList = MutableStateFlow(GetRegionResponse())
-    val townList = _townList.asStateFlow()
+
 
     val _selectRegion = MutableStateFlow("")
     val selectRegion:StateFlow<String> = _selectRegion.asStateFlow()
@@ -115,7 +132,6 @@ class CommunityViewModel @Inject constructor(
             getTownListUseCase(token)
                 .onSuccess {
                     _townList.value = it
-                    Log.d("getTownList", "$it")
                 }
                 .onFailure {
                     Log.e("getTownList", "$it")
@@ -123,26 +139,32 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-
-
-    fun getTownCommentList(size:Int,tag:String?,lastArticleId:Int?,longtitude: Double?, latitude: Double?,regionLv2:String){
-        viewModelScope.launch {
-            val token = "Bearer ${tokenManager.accessToken.first()}"
-            getCommunityTownListUseCase(token,size,tag,lastArticleId,longtitude,latitude,regionLv2)
-                .onSuccess {datalist->
-                    _townCommentList.value = datalist
-                }
-                .onFailure {it->
-                    //Log.e("CommunityForTownViewModel","$it")
-                    if(it is HttpException){
-                        Log.e("CommunityForTownViewModel1","$it")
-                    }
-                    else{
-                        Log.e("CommunityForTownViewModel2","${it}")
-                    }
-                }
-        }
+    //커뮤니티 리스트 무한 스크롤 데이터 호출
+    val combinedData = combine(
+        _tag, _longtitude, _latitude, _regionLv2
+    ) {
+        tag, longtitude, latitude, regionLv2 ->
+        Triple(tag, Triple(longtitude, latitude, regionLv2), null)
+    }.flatMapLatest { (tag, locationInfo, _) ->
+        val (longitude, latitude, regionLv2) = locationInfo
+        val token = "Bearer ${tokenManager.accessToken.first()}"
+        getCommunityTownListUseCase(token, tag, longitude, latitude, regionLv2)
     }
+
+    fun setTag(tag: String){
+        _tag.value = tag
+    }
+    fun setLongitude(longitude: Double){
+        _longtitude.value = longitude
+    }
+    fun setLatitude(latitude: Double){
+        _latitude.value = latitude
+    }
+    fun setRegion(regionLv2: String){
+        _regionLv2.value = regionLv2
+    }
+
+
     fun getTownDetail(articleId: Int){
         viewModelScope.launch {
             val token = "Bearer ${tokenManager.accessToken.first()}"
@@ -162,8 +184,6 @@ class CommunityViewModel @Inject constructor(
             setCommunityWritingUseCase.invoke(token,title,content,articleTag,imageList,longtitude,latitude,regionAgreementCheck)
                 .onSuccess {
                     _writingResult.value = it
-                    Log.d("CommunityViewModel", "성공성공성공")
-                    Log.d("CommunityViewModel", "$it")
                 }
                 .onFailure {
                     Log.d("CommunityViewModel1", "$it")
@@ -179,7 +199,6 @@ class CommunityViewModel @Inject constructor(
             getTownReplyUseCase.invoke(token,articleId)
                 .onSuccess {response->
                     _replyResult.value = response
-                    Log.d("getReply", "$response")
                 }
                 .onFailure {
                     Log.e("getReply","$it")
@@ -208,7 +227,6 @@ class CommunityViewModel @Inject constructor(
             setCommunityTownRereplyWritingUseCase.invoke(token,articleid,commentid,body)
                 .onSuccess {
                     setReply(articleid)
-                    Log.e("writeRereply","$it")
                 }
                 .onFailure {
                     Log.e("writeRereply","$it")
@@ -272,11 +290,9 @@ class CommunityViewModel @Inject constructor(
                 .onSuccess { response->
                     _disasterHomeDetail.value = response
                     _isLoading.value = false
-                    Log.d("getDisasterDetail", "${response}")
                 }
                 .onFailure {
                     _isLoading.value = true
-                    Log.d("getDisasterDetail", "${it}")
                 }
         }
     }
@@ -312,9 +328,10 @@ class CommunityViewModel @Inject constructor(
 
     private fun tagTextForDetail(articleTag:String):String{
         return when(articleTag){
-            "SAFETY" -> "안전"
+            "SAFETY" -> "치안"
             "LIFE" -> "일상"
             "TRAFFIC" -> "교통"
+            "NONE" -> "기타"
             else->"기타"
         }
     }
@@ -322,7 +339,7 @@ class CommunityViewModel @Inject constructor(
     @RequiresApi(Build.VERSION_CODES.O)
     fun getTimeDifference(createdTime: String): String {
         if (createdTime.isBlank()) {
-            return "기본값 또는 오류 메시지"//createdAt":"2023-11-22 08:21
+            return "기본값 또는 오류 메시지"
         }
 
         val formatters = listOf(//2023-11-22 08:21

@@ -121,12 +121,14 @@ interface ApiService {
     suspend fun getTownCommentList(
         @Header("Authorization") token:String,
         @Query("size") size:Int,
+        @Query("page") page:Int,
+        @Query("sort") sort:List<String>,
         @Query("tag") tag:String?,
         @Query("lastArticleId") lastArticleId:Int?,
-        @Query("longtitude") longtitude:Double?,
+        @Query("longitude") longitude:Double?,
         @Query("latitude") latitude:Double?,
         @Query("regionLv2") regionLv2:String
-    ):ApiResult<CommunityTownListModel>
+    ) : ApiResult<CommunityTownListModel>
 
     //온보딩시 선택한 지역리스트 조회
     @GET("/api/members/regions")

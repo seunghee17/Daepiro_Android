@@ -56,6 +56,10 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
         adapter = CommunityWritingImageAdapter(mutableListOf())
         binding.imgList.adapter = adapter
 
+        adapter.onImageRemoved = { uri->
+            imageUriList.remove(uri)
+        }
+
         binding.select.setOnClickListener {
             showBottomSheet()
         }
@@ -73,11 +77,9 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
             }
         }
 
-
         binding.backBtn.setOnClickListener{
             findNavController().popBackStack()
         }
-
 
         binding.titleTxt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -117,7 +119,7 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
         binding.complete.setOnClickListener {
             val imagePartList = UrisToMultipartBody(imageUriList,requireContext().contentResolver)
             postComment(title,content,articleTag,imagePartList,latitudeForsend,longitudeForsend,regionAgreementCheck)
-            articleTag=""
+            viewModel._tagData.value = null
             imageUriList = mutableListOf()
             findNavController().navigateUp()
         }
@@ -238,7 +240,7 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
         return multiPartList
     }
 
-    
+
     private fun postComment(title:String, content:String, articleTag:String, imageList:List<MultipartBody.Part>, longitude:Double, latitude:Double, regionAgreementCheck:Boolean){
         viewModel.postComment(title, content, articleTag,imageList, latitude, longitude, regionAgreementCheck)
     }
