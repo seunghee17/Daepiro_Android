@@ -1,6 +1,7 @@
 package com.daepiro.numberoneproject.presentation.view.community
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.AdapterView
@@ -60,6 +61,8 @@ class CommunityFragment : BaseFragment<FragmentCommunityBinding>(R.layout.fragme
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val selectedItem = p0?.getItemAtPosition(p2).toString()
+                Log.d("exex", "$selectedItem")
+
                 viewModel._selectRegion.value = selectedItem
             }
 
@@ -90,8 +93,8 @@ class CommunityFragment : BaseFragment<FragmentCommunityBinding>(R.layout.fragme
     }
 
     private fun setSpinner(townData:List<String>){
-        val adapter = ArrayAdapter(requireContext(), R.layout.item_spinner,townData)
-        adapter.setDropDownViewResource(R.layout.item_spinner,)
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_spinner_text,townData)
+        adapter.setDropDownViewResource(R.layout.item_spinner)
         binding.spinner.adapter = adapter
         binding.spinner.post {
             binding.spinner.dropDownVerticalOffset = binding.spinner.height
