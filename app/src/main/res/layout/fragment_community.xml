@@ -22,7 +22,7 @@
         android:layout_height="48dp"
         android:orientation="horizontal"
         android:background="@color/white"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <Spinner
             android:id="@+id/spinner"

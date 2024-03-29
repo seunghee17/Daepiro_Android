@@ -61,11 +61,8 @@ class CommunityFragment : BaseFragment<FragmentCommunityBinding>(R.layout.fragme
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val selectedItem = p0?.getItemAtPosition(p2).toString()
-                Log.d("exex", "$selectedItem")
-
                 viewModel._selectRegion.value = selectedItem
             }
-
             override fun onNothingSelected(p0: AdapterView<*>?) {
             }
 
