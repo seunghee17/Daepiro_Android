@@ -121,12 +121,14 @@ interface ApiService {
     suspend fun getTownCommentList(
         @Header("Authorization") token:String,
         @Query("size") size:Int,
+        @Query("page") page:Int,
+        @Query("sort") sort:List<String>,
         @Query("tag") tag:String?,
         @Query("lastArticleId") lastArticleId:Int?,
-        @Query("longtitude") longtitude:Double?,
+        @Query("longitude") longitude:Double?,
         @Query("latitude") latitude:Double?,
         @Query("regionLv2") regionLv2:String
-    ):ApiResult<CommunityTownListModel>
+    ) : ApiResult<CommunityTownListModel>
 
     //온보딩시 선택한 지역리스트 조회
     @GET("/api/members/regions")
@@ -141,18 +143,12 @@ interface ApiService {
         @Path("articleid") articleid:Int
     ):ApiResult<CommunityTownDetailData>
 
-    //커뮤니티 동네생활 게시글 작성
     @Multipart
     @POST("/api/articles")
     suspend fun setTownDetail(
         @Header("Authorization") token:String,
-        @Part("title") title:RequestBody,
-        @Part("content") content:RequestBody,
-        @Part("articleTag") articleTag:RequestBody,
         @Part imageList: List<MultipartBody.Part>,
-        @Part("longitude") longitude:RequestBody?,
-        @Part("latitude") latitude:RequestBody?,
-        @Part("regionAgreementCheck") regionAgreementCheck:RequestBody
+        @PartMap data: HashMap<String, RequestBody>
     ):ApiResult<CommentWritingResponse>
 
     //커뮤니티 동네생활 댓글 조회

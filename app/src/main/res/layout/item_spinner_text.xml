@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
     <TextView
+        android:id="@+id/text1"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="123dp"
+        android:paddingLeft="16dp"
+
+
         android:background="@drawable/bg_radius_4"
         android:text="강남구"
-        android:paddingLeft="16dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        style="@style/button"
+        style="@style/subtitle1"
         android:singleLine="true"
         android:ellipsize="end"
-        android:textColor="@color/secondary_400"/>
+        android:textColor="@color/secondary_600"/>

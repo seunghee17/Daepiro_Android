@@ -37,8 +37,6 @@ import org.w3c.dom.Text
 class CommunityTabBFragment : BaseFragment<FragmentCommunityTabBBinding>(R.layout.fragment_community_tab_b) {
     val viewModel by activityViewModels<CommunityViewModel>()
     private lateinit var adapter : TownCommentListAdapter
-    private var lastItemId:Int? = null
-    private var isLoading = false
     private var region : String = ""
     private var latitude:Double=0.0
     private var longitude:Double=0.0
@@ -52,12 +50,10 @@ class CommunityTabBFragment : BaseFragment<FragmentCommunityTabBBinding>(R.layou
         binding.viewModel = viewModel
         binding.all.isSelected = true
 
-        //위경도를 가져옴과 동시에 초기 api호출
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         getCurrentLocation()
 
 
-        //카테고리 tag들
         val tags = listOf(binding.all, binding.life, binding.traffic, binding.safety,binding.other)
         tags.forEach{textview->
             textview.setOnClickListener{
@@ -73,11 +69,12 @@ class CommunityTabBFragment : BaseFragment<FragmentCommunityTabBBinding>(R.layou
 
     override fun onResume() {
         super.onResume()
-        Log.d("onresume","$currentTag")
-        //clearUpdateData(currentTag)
-        viewModel.getTownCommentList(10, currentTag, lastItemId, latitude, longitude, region)
+        viewModel.setLongitude(longitude)
+        viewModel.setLatitude(latitude)
+        viewModel.setTag(currentTag)
+        viewModel.setRegion(region)
+        collectTownCommentList()
     }
-
 
     override fun setupInit() {
         super.setupInit()
@@ -85,6 +82,10 @@ class CommunityTabBFragment : BaseFragment<FragmentCommunityTabBBinding>(R.layou
 
     override fun subscribeUi() {
         super.subscribeUi()
+        viewModel.setLongitude(longitude)
+        viewModel.setLatitude(latitude)
+        viewModel.setTag(currentTag)
+        viewModel.setRegion(region)
         collectTownCommentList()
 
         repeatOnStarted {
@@ -94,7 +95,6 @@ class CommunityTabBFragment : BaseFragment<FragmentCommunityTabBBinding>(R.layou
         }
 
     }
-
 
     private fun getCurrentLocation(){
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -110,9 +110,11 @@ class CommunityTabBFragment : BaseFragment<FragmentCommunityTabBBinding>(R.layou
                     longitude = it.longitude
                     lifecycleScope.launch {
                         if(isAdded){
-                            viewModel.selectRegion.collect{region->
-                                viewModel.getTownCommentList(10,"",null,longitude,latitude,viewModel.selectRegion.value)
-                                setInfiniteScroll("")
+                            viewModel.selectRegion.collect{
+                                viewModel.setRegion(viewModel.selectRegion.value)
+                                viewModel.setLatitude(latitude)
+                                viewModel.setLongitude(longitude)
+                                collectTownCommentList()
                             }
                         }
                     }
@@ -131,80 +133,45 @@ class CommunityTabBFragment : BaseFragment<FragmentCommunityTabBBinding>(R.layou
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     getCurrentLocation()
                 } else {
-                    // 권한 거부 처리
+
                 }
             }
         }
     }
+
     private fun collectTownCommentList(){
         repeatOnStarted {
-            viewModel.townCommentList.collect {response->
-                if(response.empty){
-                    isLoading = false
-                    return@collect
-                }
-                isLoading = false
-                adapter.updateList(response.content)
-                lastItemId = response.content.lastOrNull()?.id
-                Log.d("collectTownCommentList","${response.content}")
+            viewModel.combinedData.collectLatest { data->
+                adapter.submitData(viewLifecycleOwner.lifecycle,data)
+
             }
         }
-        //지역값 변경시 다시로드
-        repeatOnStarted {
-            viewModel.selectRegion.collectLatest { response->
-                region = response
-                adapter.clearData()
-                viewModel.getTownCommentList(10, "", null,longitude,latitude,region)
-            }
         }
-    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpRecyclerView(){
-        adapter = TownCommentListAdapter(emptyList(),object :TownCommentListAdapter.onItemClickListener{
+        adapter = TownCommentListAdapter(object :TownCommentListAdapter.onItemClickListener{
             override fun onItemClick(id: Int) {
-                Log.d("taaaaag","$id")
-                //viewModel.id = id
                 viewModel.getTownDetail(id)
                 viewModel.setReply(id)
                 findNavController().navigate(R.id.action_communityFragment_to_communityTownDetailFragment)
             }
         },viewModel::getTimeDifference
-            )
+        )
         binding.recycler.adapter = adapter
     }
 
-    private fun setInfiniteScroll(tag:String) {
-        binding.recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                // 이미 로딩 중이거나 위로 스크롤하는 경우 무시
-                if (isLoading || dy <= 0) return
-
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val totalItemCount = layoutManager.itemCount
-                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-
-                // 목록의 마지막 아이템에 도달했을 때 API 호출
-                if (totalItemCount - 1 == lastVisibleItemPosition) {
-                    isLoading = true
-                    viewModel.getTownCommentList(10, tag, lastItemId,longitude,latitude,region) // lastItemId를 API 호출에 포함
-
-                }
-            }
-        })
-    }
-
-    //태그를 누를때 데이터 셋팅하는 함수
-    private fun clearUpdateData(tag:String){
-        adapter.clearData()
-        viewModel.getTownCommentList(10, tag, null, longitude, latitude, region)
-        //collectTownCommentList()
+    private fun UpdateTagData(tag:String){
+        viewModel.setLongitude(longitude)
+        viewModel.setLatitude(latitude)
+        viewModel.setTag(tag)
+        viewModel.setRegion(region)
+        collectTownCommentList()
     }
 
 
     private fun selectTags(selectedTag: TextView, textviews:List<TextView>){
         textviews.forEach{
-            //it.isSelected = textviews == selectedTag
             it.isSelected = it == selectedTag
         }
         currentTag = when (selectedTag) {
@@ -215,8 +182,8 @@ class CommunityTabBFragment : BaseFragment<FragmentCommunityTabBBinding>(R.layou
             binding.other -> "NONE"
             else -> ""
         }
-        clearUpdateData(currentTag)
+        UpdateTagData(currentTag)
     }
 
-
 }
+

@@ -131,6 +131,9 @@ dependencies {
     implementation("com.android.billingclient:billing:6.0.1")
     implementation("com.github.moisoni97:google-inapp-billing:1.1.3")
 
+    //Paging
+    implementation("androidx.paging:paging-runtime:3.2.1")
+
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

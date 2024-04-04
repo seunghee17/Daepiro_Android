@@ -6,6 +6,6 @@ data class CommentWritingResponse(
     val address: String = "",
     val articleId: Int = 0,
     val createdAt: String="",
-    val imageUrls: List<MultipartBody.Part> = listOf(),
+    val imageUrls: List<String> = listOf(),
     val thumbNailImageUrl: String=""
 )

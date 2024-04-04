@@ -2,55 +2,47 @@ package com.daepiro.numberoneproject.presentation.view.community
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
+import android.content.ContentResolver
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
-import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.daepiro.numberoneproject.R
-import com.daepiro.numberoneproject.data.model.CommentWritingRequestBody
 import com.daepiro.numberoneproject.databinding.FragmentCommunityTownWritingBinding
 import com.daepiro.numberoneproject.presentation.base.BaseFragment
+import com.daepiro.numberoneproject.presentation.util.Extensions.showToast
 import com.daepiro.numberoneproject.presentation.viewmodel.CommunityViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.coroutines.launch
-import okhttp3.MediaType
+import com.gun0912.tedpermission.PermissionListener
+import com.gun0912.tedpermission.normal.TedPermission
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import java.io.ByteArrayOutputStream
-import java.lang.RuntimeException
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBinding>(R.layout.fragment_community_town_writing) {
     val viewModel by activityViewModels<CommunityViewModel>()
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private val imageUrls = mutableListOf<String>()
+    private lateinit var adapter : CommunityWritingImageAdapter
     private var selectedImageUri: Uri? = null
-    private var imagePartList = mutableListOf<MultipartBody.Part>()
+    private var imageUriList = mutableListOf<String>()
     private var title: String = ""
     private var content: String = ""
     private var latitudeForsend = 0.0
@@ -61,7 +53,12 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
+        adapter = CommunityWritingImageAdapter(mutableListOf())
+        binding.imgList.adapter = adapter
 
+        adapter.onImageRemoved = { uri->
+            imageUriList.remove(uri)
+        }
 
         binding.select.setOnClickListener {
             showBottomSheet()
@@ -80,12 +77,9 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
             }
         }
 
-
         binding.backBtn.setOnClickListener{
             findNavController().popBackStack()
         }
-
-        //checkLocationPermission()
 
         binding.titleTxt.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -113,16 +107,21 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
         })
 
         binding.addPhoto.setOnClickListener {
-            if (checkPermission()) {
-                getImage()
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+                requestAllStoragePermission()
+            }else{
+                requestReadStoragePermission()
             }
         }
 
-            //저장되기 전에 화면이 전환되서 그런거 아닐까??
+
         binding.complete.setOnClickListener {
+            val imagePartList = UrisToMultipartBody(imageUriList,requireContext().contentResolver)
             postComment(title,content,articleTag,imagePartList,latitudeForsend,longitudeForsend,regionAgreementCheck)
+            viewModel._tagData.value = null
+            imageUriList = mutableListOf()
             findNavController().navigateUp()
-            Log.d("postComment", "$articleTag")
         }
     }
 
@@ -143,15 +142,38 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
             }
     }
 
+    private fun requestReadStoragePermission(){
+        TedPermission.create()
+            .setPermissionListener(object : PermissionListener {
+                override fun onPermissionGranted() {
+                    getImage()
+                }
 
-    private fun checkPermission(): Boolean {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.READ_MEDIA_IMAGES), STORAGE_PERMISSION_CODE)
-            Log.d("checkPermission", "false")
-            return false
-        }
-        Log.d("checkPermission", "true")
-        return true
+                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                    showToast("갤러리 접근 필수로 필요합니다.")
+                }
+            })
+            .setPermissions(
+                android.Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+            .check()
+    }
+
+    private fun requestAllStoragePermission(){
+        TedPermission.create()
+            .setPermissionListener(object : PermissionListener {
+                override fun onPermissionGranted() {
+                    getImage()
+                }
+
+                override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                    showToast("갤러리 접근 필수로 필요합니다.")
+                }
+            })
+            .setPermissions(
+                android.Manifest.permission.READ_MEDIA_IMAGES
+            )
+            .check()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -186,64 +208,41 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
         if (resultCode == Activity.RESULT_OK && requestCode == GALLERY_REQUEST_CODE) {
             selectedImageUri = data?.data
             selectedImageUri?.let { uri ->
-                val imageUrl = uri.toString()
-                addImageToImageUrls(imageUrl)
-                //이미지 비트맵 변환
-                val bitmap = uriToBitmap(uri)
-                bitmap?.let{
-                    val imagePart = bitmapToMultipartBody(it)
-                    imagePartList.add(imagePart)
-                    Log.d("onActivityResult","$imagePartList")
+                binding.imgContainer.visibility = View.VISIBLE
+                imageUriList.add(uri.toString())
+                adapter.addImage(uri.toString())
+
+            }
+        }
+    }
+
+    private fun UrisToMultipartBody(
+        uris : List<String>,
+        contentResolver: ContentResolver
+    ): List<MultipartBody.Part>{
+        val multiPartList = mutableListOf<MultipartBody.Part>()
+        uris.forEach { uriString->
+            val uri = Uri.parse(uriString)
+            try{
+                contentResolver.openInputStream(uri)?.use{inputStream ->
+                    val tempFile = File.createTempFile("upload_", ".jpg", context?.cacheDir).apply {
+                        deleteOnExit()
+                    }
+                    inputStream.copyTo(tempFile.outputStream())
+                    val requestFile = tempFile.asRequestBody("image/*".toMediaTypeOrNull())
+                    val result = MultipartBody.Part.createFormData("imageList", tempFile.name, requestFile)
+                    multiPartList.add(result)
                 }
-                Log.d("CommunityTownWritingFragment", "$imagePartList")
+            }catch (e:Exception){
+                null
             }
         }
+        return multiPartList
     }
 
 
-    private fun bitmapToMultipartBody(bitmap: Bitmap): MultipartBody.Part {
-        // 비트맵을 바이트 배열로 변환
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-
-        // 바이트 배열을 RequestBody로 변환
-        val requestBody = RequestBody.create("image/jpeg".toMediaTypeOrNull(), byteArray)
-
-        // MultipartBody.Part로 변환
-        return MultipartBody.Part.createFormData("image", "image.jpg", requestBody)
-    }
-
-    private fun uriToBitmap(uri:Uri):Bitmap?{
-        val inputStream = requireContext().contentResolver.openInputStream(uri)
-        return BitmapFactory.decodeStream(inputStream)
-    }
-
-    private fun addImageToImageUrls(imageUrl: String) {
-        imageUrls.add(imageUrl)
-        updateImageViews()
-    }
-
-    private fun updateImageViews() {
-        val imageViews = listOf(binding.image1, binding.image2, binding.image3)
-        val cardViews = listOf(binding.card1, binding.card2, binding.card3)
-
-        imageUrls.forEachIndexed { index, imageUrl ->
-            if (index < imageViews.size) {
-                loadImageIntoImageView(imageUrl, imageViews[index], cardViews[index])
-            }
-        }
-    }
-
-    private fun loadImageIntoImageView(imageUrl: String, imageView: ImageView, cardView: CardView) {
-        cardView.visibility = View.VISIBLE
-        Glide.with(this).load(imageUrl).into(imageView)
-    }
-
-    //게시글 작성 api요청
-    private fun postComment(title:String, content:String, articleTag:String,imageList:List<MultipartBody.Part>, longitude:Double, latitude:Double, regionAgreementCheck:Boolean){
-        viewModel.postComment(title, content, articleTag,imagePartList, latitude, longitude, regionAgreementCheck)
-        Log.d("postComment1", "${title}, ${content}, ${latitude} , ${longitude} , ${binding.checkLocationPermission.isChecked}")
+    private fun postComment(title:String, content:String, articleTag:String, imageList:List<MultipartBody.Part>, longitude:Double, latitude:Double, regionAgreementCheck:Boolean){
+        viewModel.postComment(title, content, articleTag,imageList, latitude, longitude, regionAgreementCheck)
     }
 
 
@@ -256,6 +255,7 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
         private const val STORAGE_PERMISSION_CODE = 100
         private const val GALLERY_REQUEST_CODE = 101
     }
+
 }
 
 

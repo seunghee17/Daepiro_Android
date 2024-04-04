@@ -1,5 +1,6 @@
 package com.daepiro.numberoneproject.domain.repository
 
+import androidx.paging.PagingData
 import com.daepiro.numberoneproject.data.model.CommentWritingRequestBody
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
 import com.daepiro.numberoneproject.data.model.CommunityDisasterDetailResponse
@@ -13,21 +14,32 @@ import com.daepiro.numberoneproject.data.model.CommunityTownReplyDeleteResponse
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyRequestBody
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyResponse
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyResponseModel
+import com.daepiro.numberoneproject.data.model.Content
 import com.daepiro.numberoneproject.data.model.ConversationRequestBody
 import com.daepiro.numberoneproject.data.model.GetRegionResponse
 import com.daepiro.numberoneproject.data.network.ApiResult
+import com.daepiro.numberoneproject.data.repositoryimpl.CommunityPagingSource
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
+import java.io.File
 
 interface CommunityRepository {
     suspend fun getTownList(token: String):ApiResult<GetRegionResponse>
-    suspend fun getTownCommentList(token:String,size:Int,tag:String?,lastArticleId:Int?, longtitude: Double?, latitude: Double?,regionLv2:String):ApiResult<CommunityTownListModel>
+    suspend fun getTownCommentList(
+        token:String,
+        tag:String?,
+        longtitude: Double?,
+        latitude: Double?,
+        regionLv2:String
+    ): Flow<PagingData<Content>>
     suspend fun getTownCommentDetail(token:String,articleId:Int):ApiResult<CommunityTownDetailData>
+
     suspend fun setTownDetail(
         token:String,
         title:String,
         content:String,
         articleTag:String,
-        imageList: List<MultipartBody.Part>,
+        imageList:List<MultipartBody.Part>,
         longtitude:Double,
         latitude:Double,
         regionAgreementCheck:Boolean
