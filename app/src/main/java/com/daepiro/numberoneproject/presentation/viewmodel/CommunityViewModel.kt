@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.daepiro.numberoneproject.data.model.CommentLikedResponseModel
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
 import com.daepiro.numberoneproject.data.model.CommunityDisasterDetailResponse
 import com.daepiro.numberoneproject.data.model.CommunityHomeDisasterResponse
@@ -22,6 +23,10 @@ import com.daepiro.numberoneproject.data.model.ConversationRequestBody
 import com.daepiro.numberoneproject.data.model.GetRegionResponse
 import com.daepiro.numberoneproject.data.network.onFailure
 import com.daepiro.numberoneproject.data.network.onSuccess
+import com.daepiro.numberoneproject.domain.usecase.CommentLikeCancelUseCase
+import com.daepiro.numberoneproject.domain.usecase.CommentLikeUsecase
+import com.daepiro.numberoneproject.domain.usecase.ConversationCancelUseCase
+import com.daepiro.numberoneproject.domain.usecase.ConversationLikeUseCase
 import com.daepiro.numberoneproject.domain.usecase.DeleteCommunityReplyUseCase
 import com.daepiro.numberoneproject.domain.usecase.DeleteCommunityTownCommentUseCase
 import com.daepiro.numberoneproject.domain.usecase.GetCommunityHomeDetailUseCase
@@ -71,8 +76,11 @@ class CommunityViewModel @Inject constructor(
     private val deleteCommunityReplyUseCase: DeleteCommunityReplyUseCase,
     private val getDisasterHomeUseCase: GetDisasterHomeUseCase,
     private val getCommunityHomeDetailUseCase: GetCommunityHomeDetailUseCase,
-    private val postDisasterConversationUseCase: PostDisasterConversationUseCase
-
+    private val postDisasterConversationUseCase: PostDisasterConversationUseCase,
+    private val commentLikeUsecase: CommentLikeUsecase,
+    private val commentLikeCancelUseCase: CommentLikeCancelUseCase,
+    private val conversationLikeUseCase: ConversationLikeUseCase,
+    private val conversationCancelUseCase: ConversationCancelUseCase
 ) : ViewModel() {
 
     private val _tag = MutableStateFlow<String?>("")
@@ -303,6 +311,25 @@ class CommunityViewModel @Inject constructor(
             postDisasterConversationUseCase(token,body)
                 .onSuccess {
                     getDisasterDetail("time", body.disasterId)
+                }
+        }
+    }
+
+    fun conversationLike(conversationId: Int) {
+        viewModelScope.launch {
+            val token = "Bearer ${tokenManager.accessToken.first()}"
+            conversationLikeUseCase(token, conversationId)
+                .onSuccess {
+
+                }
+        }
+    }
+
+    fun conversationCancel(conversationId: Int) {
+        viewModelScope.launch {
+            val token = "Bearer ${tokenManager.accessToken.first()}"
+            conversationCancelUseCase(token, conversationId)
+                .onSuccess {
                 }
         }
     }

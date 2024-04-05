@@ -16,6 +16,7 @@ import com.daepiro.numberoneproject.data.model.CommunityTownReplyResponse
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyResponseModel
 import com.daepiro.numberoneproject.data.model.ConversationRequestBody
 import com.daepiro.numberoneproject.data.model.CheerMessageRequest
+import com.daepiro.numberoneproject.data.model.CommentLikedResponseModel
 import com.daepiro.numberoneproject.data.model.DisasterRequestBody
 import com.daepiro.numberoneproject.data.model.DisasterResponse
 import com.daepiro.numberoneproject.data.model.FamilyListResponse
@@ -293,4 +294,27 @@ interface ApiService {
         @Query("size") size: Int,
         @Query("isDisaster") isDisaster: Boolean
     ): ApiResult<AlarmResponse>
+
+    @PUT("/api/likes/comments/{comment-id}/add")
+    suspend fun commentLikeControll(
+        @Header("Authorization") token: String,
+        @Path("comment-id") commentId: Int
+    ): ApiResult<CommentLikedResponseModel>
+
+    @PUT("/api/likes/comments/{comment-id}/cancel")
+    suspend fun commentLikeCancelControll(
+        @Header("Authorization") token: String,
+        @Path("comment-id") commentId: Int
+    ): ApiResult<CommentLikedResponseModel>
+
+    @POST("/api/conversations/like/{conversationId}")
+    suspend fun conversationLike(
+        @Header("Authorization") token: String,
+        @Path("supportId") conversationId: Int,
+    ): ApiResult<Any>
+    @DELETE("/api/conversations/like/{conversationId}")
+    suspend fun conversationLikeCancel(
+        @Header("Authorization") token: String,
+        @Path("supportId") conversationId: Int,
+    ): ApiResult<Any>
 }

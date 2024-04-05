@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.daepiro.numberoneproject.data.model.CommentLikedResponseModel
 import com.daepiro.numberoneproject.data.model.CommentWritingRequestBody
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
 import com.daepiro.numberoneproject.data.model.CommunityDisasterDetailResponse
@@ -157,5 +158,32 @@ class CommunityRepositoryImpl @Inject constructor(
             "png" -> "image/png"
             else -> "application/octet-stream"
         }.toMediaTypeOrNull()
+    }
+
+    override suspend fun commentLikeControll(
+        token: String,
+        commentId: Int
+    ): ApiResult<CommentLikedResponseModel> {
+        return service.commentLikeControll(token, commentId)
+    }
+
+    override suspend fun commentLikeCancelControll(
+        token: String,
+        commentId: Int
+    ): ApiResult<CommentLikedResponseModel> {
+        return service.commentLikeCancelControll(token, commentId)
+    }
+
+    override suspend fun conversationLike(
+        token: String,
+        conversationId: Int
+    ): ApiResult<Any> {
+        return service.conversationLike(token, conversationId)
+    }
+    override suspend fun conversationLikeCancel(
+        token: String,
+        conversationId: Int
+    ): ApiResult<Any> {
+        return service.conversationLikeCancel(token, conversationId)
     }
 }

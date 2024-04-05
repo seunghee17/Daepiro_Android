@@ -1,6 +1,7 @@
 package com.daepiro.numberoneproject.domain.repository
 
 import androidx.paging.PagingData
+import com.daepiro.numberoneproject.data.model.CommentLikedResponseModel
 import com.daepiro.numberoneproject.data.model.CommentWritingRequestBody
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
 import com.daepiro.numberoneproject.data.model.CommunityDisasterDetailResponse
@@ -54,4 +55,10 @@ interface CommunityRepository {
     suspend fun getDisasterHome(token:String):ApiResult<CommunityHomeDisasterResponse>
     suspend fun getDisasterHomeDetail(token:String, sort:String,disasterId:Int):ApiResult<CommunityDisasterDetailResponse>
     suspend fun postDisasterConversation(token:String, body: ConversationRequestBody):ApiResult<Unit>
+
+    suspend fun commentLikeControll(token: String, commentId: Int): ApiResult<CommentLikedResponseModel>
+    suspend fun commentLikeCancelControll(token: String, commentId: Int): ApiResult<CommentLikedResponseModel>
+
+    suspend fun conversationLike(token: String, conversationId: Int): ApiResult<Any>
+    suspend fun conversationLikeCancel(token: String, conversationId: Int): ApiResult<Any>
 }
