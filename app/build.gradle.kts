@@ -16,7 +16,7 @@ fun getBaseUrl(propertyBaseUrl : String): String {
 
 android {
     namespace = "com.daepiro.numberoneproject"
-    compileSdk = 33
+    compileSdk = 34
 
 
     defaultConfig {
@@ -83,6 +83,7 @@ dependencies {
 
     // Hilt kotlin 1.9.0에서는 hilt 2.48
     implementation("com.google.dagger:hilt-android:2.48")
+    implementation("androidx.paging:paging-common-android:3.3.0-beta01")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     // Jetpack Navigation
