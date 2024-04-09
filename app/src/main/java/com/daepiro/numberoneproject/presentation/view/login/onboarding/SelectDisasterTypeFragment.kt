@@ -47,17 +47,17 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
         val end = start + "재난 유형".length
 
         spannable.setSpan(
-            ForegroundColorSpan(resources.getColor(R.color.orange_500)), // 색상을 변경할 Span 객체
+            ForegroundColorSpan(resources.getColor(R.color.orange_500)),
             start, // 변경할 텍스트의 시작 인덱스
             end, // 변경할 텍스트의 끝 인덱스
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         binding.sub.text = spannable
-        binding.check.setOnCheckedChangeListener{_, isChecked ->
+        binding.check.setOnCheckedChangeListener {_, isChecked ->
             if (isChecked) {
                 adapter.selectAllItems()
                 selectedItems.clear()
-                selectedItems.addAll(adapter.getItemList()) // 모든 아이템을 selectedItems에 추가
+                selectedItems.addAll(adapter.getItemList())
                 updateButtonColor(true)
             } else {
                 adapter.deselectAllItems()

@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daepiro.numberoneproject.R
 import com.daepiro.numberoneproject.data.model.ConversationModel
-import com.daepiro.numberoneproject.data.model.ConversationRequestBody
 
 class CommunityTabABottomSheetAdapter(
     private val context: Context,
@@ -53,26 +52,37 @@ class CommunityTabABottomSheetAdapter(
                 listener.onItemClickListener()//그냥 배경만 활성화되는 정도
             }
 
+            if(item.isLiked) {
+                holder.likeBtn.setColorFilter(ContextCompat.getColor(context, R.color.orange_500))
+            } else {
+                holder.likeBtn.setColorFilter(ContextCompat.getColor(context, R.color.secondary_300))
+            }
+            //api 수정되면 다시
             holder.likeBtn.setOnClickListener{
-                if(item.isLiked){
-                    holder.likeBtn.setColorFilter(ContextCompat.getColor(context, R.color.orange_500))
+                val newIsLiked = !item.isLiked
+                item.isLiked = newIsLiked
+
+                if(newIsLiked){
+                    item.like += 1
                     listener.onLikeClicked(item.conversationId)
                 } else {
-                    holder.likeBtn.setColorFilter(ContextCompat.getColor(context, R.color.secondary_300))
+                    item.like -= 1
                     listener.onUnlikeClicked(item.conversationId)
                 }
-            }
-            val likeNum = item.like
-            if(likeNum != 0) {
-                holder.likeNum.visibility = View.VISIBLE
                 holder.likeNum.text = item.like.toString()
+                holder.likeNum.visibility = if(item.like>0) View.VISIBLE else View.GONE
+                notifyItemChanged(position)
+            }
+
+            holder.likeNum.text = item.like.toString()
+            if(item.like != 0) {
+                holder.likeNum.visibility = View.VISIBLE
+            } else {
+                holder.likeNum.visibility = View.GONE
             }
         }
 
     }
-
-
-
     fun updateList(newData:List<ConversationModel>){
         items = newData
         notifyDataSetChanged()

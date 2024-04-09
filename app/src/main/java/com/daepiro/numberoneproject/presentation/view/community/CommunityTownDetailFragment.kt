@@ -110,7 +110,7 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setUpReplyRecyclerView(){
+    private fun setUpReplyRecyclerView() {
         adapterReply = CommunityTownDetailReplyAdapter(emptyList(),object : CommunityTownDetailReplyAdapter.onItemClickListener{
             override fun onAdditionalItemClick(commentid: Int) {
                 showBottomSheet()
@@ -133,7 +133,7 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
     }
 
     //댓글 업데이트
-    private fun collectReply(){
+    private fun collectReply() {
         repeatOnStarted {
             viewModel.replyResult.collect{response ->
                 if(response.isEmpty()){

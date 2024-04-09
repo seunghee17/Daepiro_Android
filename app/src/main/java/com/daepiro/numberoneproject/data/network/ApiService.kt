@@ -310,11 +310,11 @@ interface ApiService {
     @POST("/api/conversations/like/{conversationId}")
     suspend fun conversationLike(
         @Header("Authorization") token: String,
-        @Path("supportId") conversationId: Int,
+        @Path("conversationId") conversationId: Int,
     ): ApiResult<Any>
     @DELETE("/api/conversations/like/{conversationId}")
     suspend fun conversationLikeCancel(
         @Header("Authorization") token: String,
-        @Path("supportId") conversationId: Int,
+        @Path("conversationId") conversationId: Int,
     ): ApiResult<Any>
 }
