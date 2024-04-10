@@ -1,13 +1,9 @@
 package com.daepiro.numberoneproject.presentation.view.networkerror
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import com.daepiro.numberoneproject.R
-import com.daepiro.numberoneproject.data.model.DisasterTypeModel
 import com.daepiro.numberoneproject.data.model.DisastertypeDataModel
 import com.daepiro.numberoneproject.databinding.FragmentBehaviorTabABinding
 import com.daepiro.numberoneproject.presentation.base.BaseFragment
@@ -29,13 +25,11 @@ class BehaviorTabAFragment : BaseFragment<FragmentBehaviorTabABinding>(R.layout.
         super.onViewCreated(view, savedInstanceState)
         val data = setData()
         binding.recycler.layoutManager = GridLayoutManager(requireContext(),3)
-        adapter = GridviewAdapter(emptyList(),
-            onItemClickListener = { disasterType, isSelected ->
-
-            },
-            onSelectionChanged = { isSelected ->
-            },
-            handleItemClick = { disasterType, isSelected ->
+        adapter = GridviewAdapter(
+            emptyList(),
+            object : GridviewAdapter.onItemClickListener{
+                override fun onItemClickListener(disasterType: String, isSelected: Boolean) {
+                }
             }
         )
         binding.recycler.adapter = adapter

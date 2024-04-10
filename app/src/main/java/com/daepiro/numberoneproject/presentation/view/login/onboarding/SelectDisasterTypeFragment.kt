@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBinding>(R.layout.fragment_select_disaster_type) {
     private val viewModel: OnboardingViewModel by activityViewModels()
-    private lateinit var adapter:GridviewAdapter
+    private lateinit var adapter: GridviewAdapter
     private val selectedItems = mutableListOf<DisastertypeDataModel>()
     private var totalItems = listOf<DisasterTypeModel>()
     private var fcmToken = ""
@@ -38,7 +38,6 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
         binding.viewModel = viewModel
         binding.allCategory.isSelected = true
         val data = setData()
-        adapter.updateList(data)
 
         //일부 글자 색상 변경
         var fullText = binding.sub.text
@@ -61,15 +60,14 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
                 updateButtonColor(true)
             } else {
                 adapter.deselectAllItems()
-                selectedItems.clear() // selectedItems 리스트 비우기
+                selectedItems.clear()
             }
             sendDisasterType()
         }
 
         binding.allCategory.setOnClickListener{
             clearSelectionsExcept(binding.allCategory)
-            val data = setData()
-            adapter.updateList(data)
+            adapter.updateList(setUpdateData())
         }
         binding.naturlDisaster.setOnClickListener{
             clearSelectionsExcept(binding.naturlDisaster)
@@ -141,39 +139,34 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
 
     override fun setupInit() {
         super.setupInit()
-        setupRecycler()
+        setupRecycler(setData())
     }
-        private fun setupRecycler() {
+        private fun setupRecycler(data: List<DisastertypeDataModel>) {
             binding.recyclerview.layoutManager = GridLayoutManager(requireContext(),3)
-            adapter = GridviewAdapter(emptyList(),
-                onItemClickListener = { disasterType, isSelected ->
-                    handleItemClick(disasterType, isSelected)
-                },
-                onSelectionChanged = { isSelected ->
-                    updateButtonColor(isSelected)
-                },
-                handleItemClick = { disasterType, isSelected ->
-                    handleItemClick(disasterType, isSelected)
+            adapter = GridviewAdapter(
+                data,
+                object : GridviewAdapter.onItemClickListener{
+                    override fun onItemClickListener(disasterType: String, isSelected: Boolean) {
+                        handleItemClick(disasterType, isSelected)
+                    }
                 }
             )
             binding.recyclerview.adapter = adapter
         }
 
 
-    private fun handleItemClick(disasterType: String, isSelected:Boolean){
-        val item = adapter.getItemList().find{it.disasterType == disasterType}
+    private fun handleItemClick(disasterType: String, isSelected: Boolean) {
+        val item = adapter.getItemList().find { it.disasterType == disasterType }
         item?.let {
             it.isSelected = isSelected
             if (isSelected) {
-                //selectedItems.add(it)
                 if (!selectedItems.contains(it)) {
                     selectedItems.add(it)
-                }
-                else{
-                }
+                }else{}
             } else {
                 selectedItems.remove(it)
             }
+            updateCheckAllStatus()
         }
     }
 
@@ -192,6 +185,24 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
             .map{ DisasterTypeModel(it.disasterType) }
         totalItems = disasterTypeList
         Log.d("sendDisasterType","$selectedItems")
+    }
+
+    private fun updateCheckAllStatus() {
+        val isAllSelected = adapter.getItemList().all { it.isSelected }
+        binding.check.setOnCheckedChangeListener(null)
+        binding.check.isChecked = isAllSelected
+        binding.check.setOnCheckedChangeListener { _, isChecked ->
+            if(isChecked) {
+                adapter.selectAllItems()
+                selectedItems.clear()
+                selectedItems.addAll(adapter.getItemList())
+            } else{
+                adapter.deselectAllItems()
+                selectedItems.clear()
+            }
+            updateButtonColor(selectedItems.isNotEmpty())
+            sendDisasterType()
+        }
     }
 
     private fun setData():List<DisastertypeDataModel> = listOf(
@@ -231,7 +242,15 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
         DisastertypeDataModel("사회재난","환경오염사고",R.drawable.ic_environment),
         DisastertypeDataModel("사회재난","AI",R.drawable.ic_ai),
         DisastertypeDataModel("기타","기타",R.drawable.ic_add),
-
         )
+    private fun setUpdateData(): List<DisastertypeDataModel> {
+        val newData =  setData()
+        return newData.map { newItem ->
+            val isSelected = selectedItems.any { selectedItem ->
+                selectedItem.disasterType == newItem.disasterType
+            }
+            newItem.copy(isSelected = isSelected)
+        }
+    }
 
 }
