@@ -52,10 +52,8 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         binding.sub.text = spannable
-        binding.checkcontainer.setOnClickListener{
-            binding.check.isChecked = !binding.check.isChecked
-
-            if(binding.check.isChecked) {
+        binding.check.setOnCheckedChangeListener { _, isChecked ->
+            if(isChecked) {
                 adapter.selectAllItems()
                 selectedItems.clear()
                 selectedItems.addAll(adapter.getItemList())
@@ -65,6 +63,9 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
                 selectedItems.clear()
             }
             sendDisasterType()
+        }
+        binding.checkcontainer.setOnClickListener{
+            binding.check.performClick()
         }
 
         binding.allCategory.setOnClickListener{
