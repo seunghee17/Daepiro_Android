@@ -69,6 +69,9 @@ class DisasterCommunityMainAdapter(
             holder.commentBtn.setOnClickListener{
                 listener.onItemClickListener(item.disasterId)
             }
+            holder.recycler.setOnClickListener{
+                listener.onItemClickListener(item.disasterId)
+            }
         }
     }
 

@@ -119,7 +119,7 @@
         android:paddingTop="10dp"
         android:gravity="center"
         android:visibility="visible"
-        android:text="더보기"/>
+        android:text="댓글 더보기"/>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

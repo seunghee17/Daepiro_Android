@@ -72,6 +72,7 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
             clearSelectionsExcept(binding.allCategory)
             adapter.updateList(setUpdateData())
         }
+
         binding.naturlDisaster.setOnClickListener{
             clearSelectionsExcept(binding.naturlDisaster)
             adapter.filterByCategory("자연재난")
@@ -144,34 +145,34 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
         super.setupInit()
         setupRecycler(setData())
     }
-        private fun setupRecycler(data: List<DisastertypeDataModel>) {
-            binding.recyclerview.layoutManager = GridLayoutManager(requireContext(),3)
-            adapter = GridviewAdapter(
-                data,
-                object : GridviewAdapter.onItemClickListener{
-                    override fun onItemClickListener(disasterType: String, isSelected: Boolean) {
+    private fun setupRecycler(data: List<DisastertypeDataModel>) {
+        binding.recyclerview.layoutManager = GridLayoutManager(requireContext(),3)
+        adapter = GridviewAdapter(
+            data,
+            object : GridviewAdapter.onItemClickListener{
+                override fun onItemClickListener(disasterType: String, isSelected: Boolean) {
                         handleItemClick(disasterType, isSelected)
-                    }
                 }
-            )
-            binding.recyclerview.adapter = adapter
-        }
-
+            }
+        )
+        binding.recyclerview.adapter = adapter
+        //초기선택상태반영
+        adapter.updateList(setUpdateData())
+    }
 
     private fun handleItemClick(disasterType: String, isSelected: Boolean) {
         val item = adapter.getItemList().find { it.disasterType == disasterType }
         item?.let {
             it.isSelected = isSelected
             if (isSelected) {
-                if (!selectedItems.contains(it)) {
-                    selectedItems.add(it)
-                }else{}
+                selectedItems.add(it)
             } else {
                 selectedItems.remove(it)
             }
             updateCheckAllStatus()
-        }
+            updateButtonColor(selectedItems.isNotEmpty())
     }
+}
 
     private fun updateButtonColor(isAnyItemSelected: Boolean) {
         if (isAnyItemSelected) {
@@ -247,11 +248,15 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
         DisastertypeDataModel("기타","기타",R.drawable.ic_add),
         )
     private fun setUpdateData(): List<DisastertypeDataModel> {
-        val newData =  setData()
-        return newData.map { newItem ->
-            val isSelected = selectedItems.any { selectedItem ->
-                selectedItem.disasterType == newItem.disasterType
-            }
+//        val newData =  setData()
+//        return newData.map { newItem ->
+//            val isSelected = selectedItems.any { selectedItem ->
+//                selectedItem.disasterType == newItem.disasterType
+//            }
+//            newItem.copy(isSelected = isSelected)
+//        }
+        return setData().map { newItem ->
+            val isSelected = selectedItems.any { it.disasterType == newItem.disasterType }
             newItem.copy(isSelected = isSelected)
         }
     }
