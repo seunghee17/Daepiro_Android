@@ -6,6 +6,6 @@ data class ConversationModel(
     val conversationId: Int,
     val info: String,
     val isEditable: Boolean,
-    val isLiked: Boolean,
-    val like: Int
+    var isLiked: Boolean,
+    var like: Int
 )

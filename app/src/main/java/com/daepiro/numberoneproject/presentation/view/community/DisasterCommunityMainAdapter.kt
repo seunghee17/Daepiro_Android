@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.daepiro.numberoneproject.R
@@ -25,8 +26,8 @@ class DisasterCommunityMainAdapter(
         val info: TextView = itemView.findViewById(R.id.info)
         val recycler:RecyclerView = itemView.findViewById(R.id.recycler_reply)
         val additional : TextView = itemView.findViewById(R.id.additional)
-        //없을때 인비저블
         val conversationCnt : TextView = itemView.findViewById(R.id.conversationCnt)
+        val commentBtn: ImageView = itemView.findViewById(R.id.commentBtn)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -63,6 +64,12 @@ class DisasterCommunityMainAdapter(
             })
             holder.recycler.adapter = subAdapter
             holder.additional.setOnClickListener{
+                listener.onItemClickListener(item.disasterId)
+            }
+            holder.commentBtn.setOnClickListener{
+                listener.onItemClickListener(item.disasterId)
+            }
+            holder.recycler.setOnClickListener{
                 listener.onItemClickListener(item.disasterId)
             }
         }

@@ -195,19 +195,21 @@
                 android:gravity="center_vertical|right"
                 android:layout_marginRight="20dp">
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/likeBtn"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_good"
                     app:tint="@color/orange_500"/>
                 <TextView
+                    android:id="@+id/likeCnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{String.valueOf(viewModel.townDetail.likeCount)}"
                     android:textColor="@color/orange_500"
                     style="@style/body2"/>
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_share"
                     android:layout_marginLeft="8dp"
                     app:tint="@color/secondary_300"/>

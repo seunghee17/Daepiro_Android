@@ -103,10 +103,21 @@ class CommunityTabABottomSheetFragment : BottomSheetDialogFragment() {
 
 
     private fun setupRecyclerview(){
-        adapter = CommunityTabABottomSheetAdapter(emptyList(), object : CommunityTabABottomSheetAdapter.onItemClickListener{
+        adapter = CommunityTabABottomSheetAdapter(
+            requireContext(),
+            emptyList(),
+            object : CommunityTabABottomSheetAdapter.onItemClickListener{
             override fun onItemClickListener() {
             }
+            override fun onLikeClicked(conversationId: Int) {
+                viewModel.conversationLike(conversationId)
+                //viewModel.updateLikeState(conversationId, true)
+            }
 
+            override fun onUnlikeClicked(conversationId: Int) {
+                viewModel.conversationCancel(conversationId)
+                //viewModel.updateLikeState(conversationId, false)
+            }
         })
         binding.recyclerview.adapter = adapter
     }

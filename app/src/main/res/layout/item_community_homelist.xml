@@ -6,37 +6,38 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="16dp"
     android:background="@drawable/bg_radius_4"
     android:backgroundTint="@color/white"
-    android:layout_marginLeft="20dp"
-    android:layout_marginRight="20dp">
+    android:layout_marginLeft="16dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginRight="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="12dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp">
         <TextView
             android:id="@+id/info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingTop="@dimen/size4"
             android:text="김연지 ∙ 5분전"
             style="@style/caption"
-            android:textColor="@color/secondary_300"
-            android:paddingTop="12dp" />
+            android:textColor="@color/secondary_300" />
         <View
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1"/>
         <ImageView
             android:id="@+id/good"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/ic_good"
-            android:layout_marginTop="12dp"
             app:tint="@color/secondary_300"/>
         <TextView
             android:id="@+id/like"
@@ -44,8 +45,9 @@
             android:layout_height="wrap_content"
             android:textColor="@color/orange_500"
             android:text="1"
+            android:paddingTop="2dp"
             android:visibility="gone"
-            style="@style/caption"/>
+            style="@style/body1"/>
         
     </LinearLayout>
     <TextView
@@ -53,9 +55,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:paddingLeft="12dp"
         android:paddingBottom="12dp"
-        style="@style/body2"
+        android:paddingRight="12dp"
+        android:paddingLeft="12dp"
+        style="@style/body1"
         android:textColor="@color/secondary_800"
         android:text="강남역 잠겼나요?"/>
 

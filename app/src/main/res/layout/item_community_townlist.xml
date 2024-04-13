@@ -30,8 +30,8 @@
                     android:text="일상"
                     android:background="@drawable/bg_radius_4"
                     android:backgroundTint="@color/secondary_50"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
                     android:paddingRight="12dp"
                     android:paddingLeft="12dp"
                     style="@style/overline"
@@ -41,7 +41,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="글제목"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="10dp"
                     style="@style/body1"
                     android:textColor="@color/secondary_800"/>
                 <TextView
@@ -49,7 +49,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="20dp"
                     android:text="글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용글내용"
-                    android:layout_marginTop="2dp"
+                    android:layout_marginTop="4dp"
                     style="@style/body2"
                     android:ellipsize="end"
                     android:maxLines="1"
@@ -80,7 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp">
         <TextView
@@ -95,28 +95,30 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/ic_good"
             app:tint="@color/orange_500"/>
         <TextView
             android:id="@+id/like_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/caption"
+            style="@style/body1"
             android:text="1"
-            android:textColor="@color/orange_500"
-            android:layout_marginRight="6dp"/>
+            android:paddingTop="2dp"
+            android:textColor="@color/orange_500" />
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/ic_community"
+            android:layout_marginLeft="6dp"
             app:tint="@color/secondary_300"/>
         <TextView
             android:id="@+id/reply_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/caption"
+            style="@style/body1"
+            android:paddingTop="2dp"
             android:text="1"
             android:textColor="@color/secondary_300"/>
     </LinearLayout>

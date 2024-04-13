@@ -31,6 +31,7 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
     val viewModel by activityViewModels<CommunityViewModel>()
     private lateinit var adapter:CommunityTownDetailImageAdapter
     private lateinit var adapterReply : CommunityTownDetailReplyAdapter
+    var likestatus = false
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -44,9 +45,8 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
         binding.backBtn.setOnClickListener {
             findNavController().popBackStack()
         }
-        collectImage()
-        collectTitle()
-
+        collectContent()
+        collectLike()
 
         binding.replyContainer.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -62,7 +62,6 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
         })
 
         binding.complete.setOnClickListener{
-            //ollectWriting()
             if(viewModel.townDetail.value.articleId != null){
                 val articleId = viewModel.townDetail.value.articleId
                 val response = binding.replyContainer.text.toString()
@@ -78,11 +77,38 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
             showBottomSheet()
             collectCommentDelete()
         }
+        binding.likeBtn.setOnClickListener {
+            collectContent()
+            collectLike()
+            val currentLikedStatus = viewModel.townDetail.value.liked
+            if(currentLikedStatus) {
+                viewModel.articleCancel(viewModel.townDetail.value.articleId)
+                Log.d("adjfakl","${viewModel.townDetail.value.liked}")
+            } else {
+                viewModel.articleLike(viewModel.townDetail.value.articleId)
+                Log.d("adjfakl","${viewModel.townDetail.value.liked}")
+            }
+        }
     }
-    //사진 데이터 감지
-    private fun collectImage(){
+
+    private fun collectLike() {
+        repeatOnStarted {
+            viewModel.articleLike.collect {
+                binding.likeCnt.text = it.currentLikeCount.toString()
+            }
+        }
+    }
+
+    private fun collectContent(){
         repeatOnStarted {
             viewModel.townDetail.collect{response->
+                if(response != null){
+                    binding.title.text = response.title
+                    Glide.with(binding.userProfile)
+                        .load(response.ownerProfileImageUrl)
+                        .error(R.drawable.character_progress)
+                        .into(binding.userProfile)
+                }
                 if(response.imageUrls == null){
                     viewModel._isVisible.value = false
                 }
@@ -90,28 +116,14 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
                     adapter.updateList(it)
                     viewModel._isVisible.value = true
                 }
-            }
-        }
-    }
-
-    private fun collectTitle(){
-        repeatOnStarted {
-            viewModel.townDetail.collect{response->
-                if(response != null){
-                    binding.title.text = response.title
-                    //userporfile
-                    Glide.with(binding.userProfile)
-                        .load(response.ownerProfileImageUrl)
-                        .error(R.drawable.character_progress)
-                        .into(binding.userProfile)
-                }
+                binding.likeCnt.text = response.likeCount.toString()
             }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setUpReplyRecyclerView(){
-        adapterReply = CommunityTownDetailReplyAdapter(emptyList(),object : CommunityTownDetailReplyAdapter.onItemClickListener{
+    private fun setUpReplyRecyclerView() {
+        adapterReply = CommunityTownDetailReplyAdapter(emptyList(), object : CommunityTownDetailReplyAdapter.onItemClickListener{
             override fun onAdditionalItemClick(commentid: Int) {
                 showBottomSheet()
                 //deleteReply
@@ -133,7 +145,7 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
     }
 
     //댓글 업데이트
-    private fun collectReply(){
+    private fun collectReply() {
         repeatOnStarted {
             viewModel.replyResult.collect{response ->
                 if(response.isEmpty()){

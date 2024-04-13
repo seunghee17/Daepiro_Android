@@ -1,5 +1,7 @@
 package com.daepiro.numberoneproject.presentation.view.login.onboarding
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.Spannable
@@ -7,6 +9,7 @@ import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -20,13 +23,17 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class InputUserInfoFragment: BaseFragment<FragmentInputUserInfoBinding>(R.layout.fragment_input_user_info) {
     private val viewModel:OnboardingViewModel by activityViewModels()
-
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        view.setOnTouchListener { v, event ->
+            hideKeyboard(v)
+            true
+        }
+
         val originalText = getString(R.string.대피로에서_사용하실_닉네임을_설정해주세요_)
         val spannableString = SpannableString(originalText)
-        // 문자열에서 강조할 부분의 시작 인덱스 찾기
         val startIndex = originalText.indexOf(getString(R.string.닉네임))
         val startIndex2 = originalText.indexOf(getString(R.string.이름))
 
