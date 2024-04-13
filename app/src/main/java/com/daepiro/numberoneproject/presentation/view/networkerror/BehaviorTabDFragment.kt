@@ -34,7 +34,7 @@ class BehaviorTabDFragment : BaseFragment<FragmentBehaviorTabDBinding>(R.layout.
             }
         )
         binding.recycler.adapter = adapter
-        adapter.updateList(data)
+        //adapter.updateList(data)
     }
 
     private fun setData():List<DisastertypeDataModel> = listOf(

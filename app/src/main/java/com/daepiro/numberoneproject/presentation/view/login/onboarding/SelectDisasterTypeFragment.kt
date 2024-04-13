@@ -32,6 +32,7 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
     private val selectedItems = mutableListOf<DisastertypeDataModel>()
     private var totalItems = listOf<DisasterTypeModel>()
     private var fcmToken = ""
+    private var currentCategory = ""
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,7 +57,7 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
             if(isChecked) {
                 adapter.selectAllItems()
                 selectedItems.clear()
-                selectedItems.addAll(adapter.getItemList())
+                selectedItems.addAll(adapter.original)
                 updateButtonColor(true)
             } else {
                 adapter.deselectAllItems()
@@ -69,25 +70,31 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
         }
 
         binding.allCategory.setOnClickListener{
+            currentCategory = ""
             clearSelectionsExcept(binding.allCategory)
-            adapter.updateList(setUpdateData())
+            adapter.filterByCategory(currentCategory, selectedItems)
+            adapter.updateList(setUpdateData(), selectedItems)
         }
 
         binding.naturlDisaster.setOnClickListener{
+            currentCategory = "자연재난"
             clearSelectionsExcept(binding.naturlDisaster)
-            adapter.filterByCategory("자연재난")
+            adapter.filterByCategory(currentCategory, selectedItems)
         }
         binding.socialDisaster.setOnClickListener{
+            currentCategory = "사회재난"
             clearSelectionsExcept(binding.socialDisaster)
-            adapter.filterByCategory("사회재난")
+            adapter.filterByCategory(currentCategory, selectedItems)
         }
         binding.emergency.setOnClickListener{
+            currentCategory = "비상대비"
             clearSelectionsExcept(binding.emergency)
-            adapter.filterByCategory("비상대비")
+            adapter.filterByCategory(currentCategory, selectedItems)
         }
         binding.etc.setOnClickListener{
+            currentCategory = "기타"
             clearSelectionsExcept(binding.etc)
-            adapter.filterByCategory("기타")
+            adapter.filterByCategory(currentCategory, selectedItems)
         }
 
 
@@ -157,21 +164,24 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
         )
         binding.recyclerview.adapter = adapter
         //초기선택상태반영
-        adapter.updateList(setUpdateData())
+        adapter.updateList(setUpdateData(),selectedItems)
     }
 
     private fun handleItemClick(disasterType: String, isSelected: Boolean) {
-        val item = adapter.getItemList().find { it.disasterType == disasterType }
-        item?.let {
+        val item = adapter.original.find {it.disasterType == disasterType}
+        item?.let{
             it.isSelected = isSelected
-            if (isSelected) {
-                selectedItems.add(it)
+            if(isSelected) {
+                if(!selectedItems.contains(it)) {
+                    selectedItems.add(it)
+                } else{}
             } else {
                 selectedItems.remove(it)
             }
-            updateCheckAllStatus()
-            updateButtonColor(selectedItems.isNotEmpty())
-    }
+        }
+        adapter.notifyDataSetChanged()
+        updateCheckAllStatus()
+        updateButtonColor(selectedItems.isNotEmpty())
 }
 
     private fun updateButtonColor(isAnyItemSelected: Boolean) {
@@ -192,7 +202,7 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
     }
 
     private fun updateCheckAllStatus() {
-        val isAllSelected = adapter.getItemList().all { it.isSelected }
+        val isAllSelected = adapter.original.all { it.isSelected }
         binding.check.setOnCheckedChangeListener(null)
         binding.check.isChecked = isAllSelected
         binding.check.setOnCheckedChangeListener { _, isChecked ->
@@ -248,13 +258,6 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
         DisastertypeDataModel("기타","기타",R.drawable.ic_add),
         )
     private fun setUpdateData(): List<DisastertypeDataModel> {
-//        val newData =  setData()
-//        return newData.map { newItem ->
-//            val isSelected = selectedItems.any { selectedItem ->
-//                selectedItem.disasterType == newItem.disasterType
-//            }
-//            newItem.copy(isSelected = isSelected)
-//        }
         return setData().map { newItem ->
             val isSelected = selectedItems.any { it.disasterType == newItem.disasterType }
             newItem.copy(isSelected = isSelected)

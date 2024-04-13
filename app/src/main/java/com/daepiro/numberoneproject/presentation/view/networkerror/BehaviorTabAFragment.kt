@@ -33,7 +33,7 @@ class BehaviorTabAFragment : BaseFragment<FragmentBehaviorTabABinding>(R.layout.
             }
         )
         binding.recycler.adapter = adapter
-        adapter.updateList(data)
+        //radapter.updateList(data,selec)
     }
 
 
