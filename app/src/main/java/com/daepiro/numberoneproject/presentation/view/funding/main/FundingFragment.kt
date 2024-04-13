@@ -64,17 +64,11 @@ class FundingFragment : BaseFragment<FragmentFundingBinding>(R.layout.fragment_f
             scrollToPosition(Int.MAX_VALUE / 2)
         }
 
-//        val list = listOf("시지1","응원메지2","응원3","응원메시지4","응원시지5","응원메시지6","응원메시지7")
-//        cheerMessageAdapterFirst.setData(list)
-
         binding.rvCheerMessage2.apply {
             layoutManager = LinearLayoutManager(requireContext(), GridLayoutManager.HORIZONTAL, false)
             adapter = cheerMessageAdapterSecond
             scrollToPosition(Int.MAX_VALUE / 2)
         }
-
-//        val list2 = listOf("0","1","2","3","4","응원메시지6","응원메시지7")
-//        cheerMessageAdapterSecond.setData(list2)
 
         autoScrollRunnableFirst = AutoScrollRunnable(binding.rvCheerMessage, SCROLL_AMOUNT, SCROLL_DELAY)
         autoScrollRunnableSecond = AutoScrollRunnable(binding.rvCheerMessage2, SCROLL_AMOUNT, SCROLL_DELAY)

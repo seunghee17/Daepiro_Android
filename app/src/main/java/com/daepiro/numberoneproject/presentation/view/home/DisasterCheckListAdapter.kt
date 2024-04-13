@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.daepiro.numberoneproject.databinding.ItemDisasterCheckListBinding
 
 class DisasterCheckListAdapter: RecyclerView.Adapter<DisasterCheckListAdapter.CustomViewHolder>() {
-    private val checkStateList1 = MutableList(5) {false}
+    private val checkStateList1 = MutableList(2) {false}
     private val checkStateList2 = MutableList(5) {false}
     private val checkStateList3 = MutableList(7) {false}
     private var selectedChip = 0

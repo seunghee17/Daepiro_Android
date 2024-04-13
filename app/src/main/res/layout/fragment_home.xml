@@ -99,8 +99,8 @@
                             android:backgroundTint="@color/orange_500">
                             <ImageView
                                 android:id="@+id/iv_disaster"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:layout_marginRight="4dp"/>
                             <TextView
                                 style="@style/button"
@@ -186,7 +186,7 @@
                                 style="@style/subtitle1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/호우_행동요령_체크리스트"
+                                android:text="지진 행동요령 체크리스트"
                                 android:textColor="@color/secondary_500" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
