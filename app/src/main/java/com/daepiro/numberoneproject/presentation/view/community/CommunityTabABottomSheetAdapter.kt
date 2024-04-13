@@ -59,19 +59,15 @@ class CommunityTabABottomSheetAdapter(
             }
             //api 수정되면 다시
             holder.likeBtn.setOnClickListener{
-                val newIsLiked = !item.isLiked
-                item.isLiked = newIsLiked
-
-                if(newIsLiked){
-                    item.like += 1
-                    listener.onLikeClicked(item.conversationId)
-                } else {
-                    item.like -= 1
+                if(item.isLiked){
                     listener.onUnlikeClicked(item.conversationId)
+                    holder.likeBtn.setColorFilter(ContextCompat.getColor(context, R.color.secondary_300))
+                } else {
+                    listener.onLikeClicked(item.conversationId)
+                    holder.likeBtn.setColorFilter(ContextCompat.getColor(context, R.color.orange_500))
                 }
                 holder.likeNum.text = item.like.toString()
                 holder.likeNum.visibility = if(item.like>0) View.VISIBLE else View.GONE
-                notifyItemChanged(position)
             }
 
             holder.likeNum.text = item.like.toString()

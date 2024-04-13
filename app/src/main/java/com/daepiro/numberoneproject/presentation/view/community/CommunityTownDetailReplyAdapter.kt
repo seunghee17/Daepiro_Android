@@ -20,6 +20,9 @@ class CommunityTownDetailReplyAdapter(
     interface onItemClickListener{
         fun onAdditionalItemClick(commentid:Int)
         fun onReplyClick(commentid:Int)
+
+//        fun onLikedClick(commentid:Int)
+//        fun onUnLikedClick(commentid:Int)
     }
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
         val userInfo: TextView = itemView.findViewById(R.id.user_info)
@@ -48,7 +51,7 @@ class CommunityTownDetailReplyAdapter(
             holder.content.text = item.content
             holder.likenum.text = item.likeCount.toString()
             if(item.likeCount > 0){
-                DrawableCompat.wrap(holder.likebtn.drawable).also{wrappedDrawable->
+                DrawableCompat.wrap(holder.likebtn.drawable).also{ wrappedDrawable->
                     DrawableCompat.setTint(wrappedDrawable,color)
                     holder.likebtn.setImageDrawable(wrappedDrawable)
                 }

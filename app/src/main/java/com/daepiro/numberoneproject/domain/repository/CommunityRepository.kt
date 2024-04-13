@@ -1,6 +1,7 @@
 package com.daepiro.numberoneproject.domain.repository
 
 import androidx.paging.PagingData
+import com.daepiro.numberoneproject.data.model.ArticleLikeResponse
 import com.daepiro.numberoneproject.data.model.CommentLikedResponseModel
 import com.daepiro.numberoneproject.data.model.CommentWritingRequestBody
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
@@ -61,4 +62,8 @@ interface CommunityRepository {
 
     suspend fun conversationLike(token: String, conversationId: Int): ApiResult<Any>
     suspend fun conversationLikeCancel(token: String, conversationId: Int): ApiResult<Any>
+
+    suspend fun articleLike(token: String, articleId: Int): ApiResult<ArticleLikeResponse>
+
+    suspend fun articleCancel(token: String, articleId: Int): ApiResult<ArticleLikeResponse>
 }

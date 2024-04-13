@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.daepiro.numberoneproject.data.model.ArticleLikeResponse
 import com.daepiro.numberoneproject.data.model.CommentLikedResponseModel
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
 import com.daepiro.numberoneproject.data.model.CommunityDisasterDetailResponse
@@ -23,6 +24,8 @@ import com.daepiro.numberoneproject.data.model.ConversationRequestBody
 import com.daepiro.numberoneproject.data.model.GetRegionResponse
 import com.daepiro.numberoneproject.data.network.onFailure
 import com.daepiro.numberoneproject.data.network.onSuccess
+import com.daepiro.numberoneproject.domain.usecase.ArticleCancelUsecase
+import com.daepiro.numberoneproject.domain.usecase.ArticleLikeUsecase
 import com.daepiro.numberoneproject.domain.usecase.CommentLikeCancelUseCase
 import com.daepiro.numberoneproject.domain.usecase.CommentLikeUsecase
 import com.daepiro.numberoneproject.domain.usecase.ConversationCancelUseCase
@@ -80,7 +83,9 @@ class CommunityViewModel @Inject constructor(
     private val commentLikeUsecase: CommentLikeUsecase,
     private val commentLikeCancelUseCase: CommentLikeCancelUseCase,
     private val conversationLikeUseCase: ConversationLikeUseCase,
-    private val conversationCancelUseCase: ConversationCancelUseCase
+    private val conversationCancelUseCase: ConversationCancelUseCase,
+    private val articlelikeUseCase: ArticleLikeUsecase,
+    private val articlecancelUseCase: ArticleCancelUsecase
 ) : ViewModel() {
 
     private val _tag = MutableStateFlow<String?>("")
@@ -91,6 +96,9 @@ class CommunityViewModel @Inject constructor(
 
     private val _townDetail = MutableStateFlow(CommunityTownDetailData())
     val townDetail=_townDetail.asStateFlow()
+
+    private val _articleLike = MutableStateFlow(ArticleLikeResponse())
+    val articleLike = _articleLike.asStateFlow()
 
     val _isVisible = MutableLiveData<Boolean>()
     val isVisible:LiveData<Boolean> = _isVisible
@@ -118,6 +126,7 @@ class CommunityViewModel @Inject constructor(
 
     private val _townList = MutableStateFlow(GetRegionResponse())
     val townList = _townList.asStateFlow()
+
 
      var isLastLoaded = false
 
@@ -288,6 +297,9 @@ class CommunityViewModel @Inject constructor(
     val disasterHomeDetail = _disasterHomeDetail.asStateFlow()
 
     var disasterId:Int=0
+    //var likeStatus:Boolean = false
+    private val _likeStatus = MutableLiveData<Boolean>()
+    val likeStatus: LiveData<Boolean> = _likeStatus
 
     //재난상황 댓글 모두
     fun getDisasterDetail(sort:String,disasterId:Int){
@@ -320,7 +332,6 @@ class CommunityViewModel @Inject constructor(
             val token = "Bearer ${tokenManager.accessToken.first()}"
             conversationLikeUseCase(token, conversationId)
                 .onSuccess {
-
                 }
         }
     }
@@ -334,7 +345,40 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
+    fun articleLike(articleId: Int) {
+        viewModelScope.launch {
+            val token = "Bearer ${tokenManager.accessToken.first()}"
+            articlelikeUseCase(token, articleId)
+                .onSuccess {
+                    _articleLike.value = it
+                    _likeStatus.postValue(true)
+                }
+        }
+    }
+    fun articleCancel(articleId: Int) {
+        viewModelScope.launch {
+            val token = "Bearer ${tokenManager.accessToken.first()}"
+            articlecancelUseCase(token, articleId)
+                .onSuccess {
+                    _articleLike.value = it
+                    _likeStatus.postValue(false)
+                }
+        }
+    }
 
+    //좋아요를 위해 추가함
+    fun updateLikeState(conversationId: Int, isLiked: Boolean) {
+        val updatedConversations = _disasterHomeDetail.value.conversations.map { conversation ->
+            if (conversation.conversationId == conversationId) {
+                // 해당 대화의 좋아요 상태를 업데이트합니다.
+                conversation.copy(isLiked = isLiked)
+            } else {
+                conversation
+            }
+        }
+        val updatedDetail = _disasterHomeDetail.value.copy(conversations = updatedConversations)
+        _disasterHomeDetail.value = updatedDetail
+    }
 
     val tagText: StateFlow<String> = townDetail
         .map { detail -> tagTextForDetail(detail.articleTag) }

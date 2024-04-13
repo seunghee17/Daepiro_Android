@@ -111,10 +111,12 @@ class CommunityTabABottomSheetFragment : BottomSheetDialogFragment() {
             }
             override fun onLikeClicked(conversationId: Int) {
                 viewModel.conversationLike(conversationId)
+                //viewModel.updateLikeState(conversationId, true)
             }
 
             override fun onUnlikeClicked(conversationId: Int) {
                 viewModel.conversationCancel(conversationId)
+                //viewModel.updateLikeState(conversationId, false)
             }
         })
         binding.recyclerview.adapter = adapter

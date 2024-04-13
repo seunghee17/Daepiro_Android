@@ -1,6 +1,7 @@
 package com.daepiro.numberoneproject.data.network
 
 import com.daepiro.numberoneproject.data.model.AlarmResponse
+import com.daepiro.numberoneproject.data.model.ArticleLikeResponse
 import com.daepiro.numberoneproject.data.model.CommentWritingRequestBody
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
 import com.daepiro.numberoneproject.data.model.CommunityDisasterDetailResponse
@@ -294,6 +295,18 @@ interface ApiService {
         @Query("size") size: Int,
         @Query("isDisaster") isDisaster: Boolean
     ): ApiResult<AlarmResponse>
+
+    @PUT("/api/likes/articles/{article-id}/add")
+    suspend fun articleLikeControll(
+        @Header("Authorization") token: String,
+        @Path("article-id") articleid: Int
+    ): ApiResult<ArticleLikeResponse>
+
+    @PUT("/api/likes/articles/{article-id}/cancel")
+    suspend fun articleCancelControll(
+        @Header("Authorization") token: String,
+        @Path("article-id") articleid: Int
+    ): ApiResult<ArticleLikeResponse>
 
     @PUT("/api/likes/comments/{comment-id}/add")
     suspend fun commentLikeControll(

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.daepiro.numberoneproject.data.model.ArticleLikeResponse
 import com.daepiro.numberoneproject.data.model.CommentLikedResponseModel
 import com.daepiro.numberoneproject.data.model.CommentWritingRequestBody
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
@@ -185,5 +186,18 @@ class CommunityRepositoryImpl @Inject constructor(
         conversationId: Int
     ): ApiResult<Any> {
         return service.conversationLikeCancel(token, conversationId)
+    }
+
+    override suspend fun articleLike(
+        token:String,
+        articleId: Int
+    ): ApiResult<ArticleLikeResponse> {
+        return service.articleLikeControll(token, articleId)
+    }
+    override suspend fun articleCancel(
+        token:String,
+        articleId: Int
+    ): ApiResult<ArticleLikeResponse> {
+        return service.articleCancelControll(token, articleId)
     }
 }
