@@ -55,6 +55,7 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
         binding.viewModel = viewModel
         adapter = CommunityWritingImageAdapter(mutableListOf())
         binding.imgList.adapter = adapter
+        viewModel._tagData.value = null
 
         adapter.onImageRemoved = { uri->
             imageUriList.remove(uri)
