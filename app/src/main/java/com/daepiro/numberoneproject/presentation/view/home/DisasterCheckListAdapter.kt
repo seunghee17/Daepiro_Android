@@ -24,21 +24,21 @@ class DisasterCheckListAdapter: RecyclerView.Adapter<DisasterCheckListAdapter.Cu
             when(selectedChip) {
                 1 -> {
                     binding.cbCheckList.isChecked = checkStateList1[position]
-                    binding.cbCheckList.setOnCheckedChangeListener { compoundButton, b ->
-                        checkStateList1[position] = b
-                    }
+//                    binding.cbCheckList.setOnCheckedChangeListener { compoundButton, b ->
+//                        checkStateList1[position] = b
+//                    }
                 }
                 2 -> {
                     binding.cbCheckList.isChecked = checkStateList2[position]
-                    binding.cbCheckList.setOnCheckedChangeListener { compoundButton, b ->
-                        checkStateList2[position] = b
-                    }
+//                    binding.cbCheckList.setOnCheckedChangeListener { compoundButton, b ->
+//                        checkStateList2[position] = b
+//                    }
                 }
                 3 -> {
                     binding.cbCheckList.isChecked = checkStateList3[position]
-                    binding.cbCheckList.setOnCheckedChangeListener { compoundButton, b ->
-                        checkStateList3[position] = b
-                    }
+//                    binding.cbCheckList.setOnCheckedChangeListener { compoundButton, b ->
+//                        checkStateList3[position] = b
+//                    }
                 }
             }
         }
