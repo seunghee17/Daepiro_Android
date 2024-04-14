@@ -271,14 +271,14 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                         2 -> disasterCheckListAdapter.setData(checkList2.subList(0,3), selectedCheckList)
                         3 -> disasterCheckListAdapter.setData(checkList3.subList(0,3), selectedCheckList)
                     }
-                    binding.ivExpand.setImageDrawable(requireContext().getDrawable(R.drawable.ic_arrow_down))
+                    binding.ivExpand.setImageDrawable(requireContext().getDrawable(R.drawable.ic_a경rrow_down))
                 }
             }
         }
 
         repeatOnStarted {
             disasterVM.disasterMessage.collectLatest {
-                binding.ivDisaster.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_earthquake))
+                binding.ivDisaster.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_rain))
             }
         }
     }
