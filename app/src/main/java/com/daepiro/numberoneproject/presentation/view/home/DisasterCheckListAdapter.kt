@@ -1,11 +1,11 @@
 package com.daepiro.numberoneproject.presentation.view.home
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daepiro.numberoneproject.databinding.ItemDisasterCheckListBinding
+import com.daepiro.numberoneproject.presentation.view.funding.main.FundingListAdapter
 
 class DisasterCheckListAdapter: RecyclerView.Adapter<DisasterCheckListAdapter.CustomViewHolder>() {
     private val checkStateList1 = MutableList(2) {false}
@@ -52,6 +52,20 @@ class DisasterCheckListAdapter: RecyclerView.Adapter<DisasterCheckListAdapter.Cu
     override fun onBindViewHolder(holder: DisasterCheckListAdapter.CustomViewHolder, position: Int) {
         holder.bind(checkList[position])
 
+        holder.binding.clTop.setOnClickListener {
+            when(selectedChip) {
+                1 -> {
+                    checkStateList1[position] = !checkStateList1[position]
+                }
+                2 -> {
+                    checkStateList2[position] = !checkStateList2[position]
+                }
+                3 -> {
+                    checkStateList3[position] = !checkStateList3[position]
+                }
+            }
+            holder.binding.cbCheckList.isChecked = !holder.binding.cbCheckList.isChecked
+        }
     }
 
     fun setData(newData: List<String>, selectedPosition: Int) {

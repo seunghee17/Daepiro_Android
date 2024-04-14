@@ -161,7 +161,7 @@
                 style="@style/caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{`모인 토큰 : ` + model.currentHeart}"
+                android:text="@{`모인 마음 : ` + model.currentHeart}"
                 android:textColor="@color/secondary_300" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.appcompat.widget.LinearLayoutCompat>
