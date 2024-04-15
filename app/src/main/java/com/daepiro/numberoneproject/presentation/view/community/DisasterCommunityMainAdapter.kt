@@ -47,12 +47,12 @@ class DisasterCommunityMainAdapter(
             holder.msg.text = item.msg
             holder.info.text = item.info
             val conversationCnt = item.conversationCnt
-            if(conversationCnt != 0){
+            if(conversationCnt != 0) {
                 holder.conversationCnt.visibility = View.VISIBLE
                 holder.conversationCnt.text = item.conversationCnt.toString()
-            }
-            else{
+            } else{
                 //댓글 없을때
+                holder.conversationCnt.visibility = View.GONE
                 holder.additional.visibility = View.GONE
             }
             //내부 recycler
