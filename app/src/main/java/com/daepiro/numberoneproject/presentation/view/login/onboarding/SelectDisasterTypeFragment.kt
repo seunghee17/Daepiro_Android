@@ -65,33 +65,33 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
             }
             sendDisasterType()
         }
-        binding.checkcontainer.setOnClickListener{
+        binding.checkcontainer.setOnClickListener {
             binding.check.performClick()
         }
 
-        binding.allCategory.setOnClickListener{
+        binding.allCategory.setOnClickListener {
             currentCategory = ""
             clearSelectionsExcept(binding.allCategory)
             adapter.filterByCategory(currentCategory, selectedItems)
             adapter.updateList(setUpdateData(), selectedItems)
         }
 
-        binding.naturlDisaster.setOnClickListener{
+        binding.naturlDisaster.setOnClickListener {
             currentCategory = "자연재난"
             clearSelectionsExcept(binding.naturlDisaster)
             adapter.filterByCategory(currentCategory, selectedItems)
         }
-        binding.socialDisaster.setOnClickListener{
+        binding.socialDisaster.setOnClickListener {
             currentCategory = "사회재난"
             clearSelectionsExcept(binding.socialDisaster)
             adapter.filterByCategory(currentCategory, selectedItems)
         }
-        binding.emergency.setOnClickListener{
+        binding.emergency.setOnClickListener {
             currentCategory = "비상대비"
             clearSelectionsExcept(binding.emergency)
             adapter.filterByCategory(currentCategory, selectedItems)
         }
-        binding.etc.setOnClickListener{
+        binding.etc.setOnClickListener {
             currentCategory = "기타"
             clearSelectionsExcept(binding.etc)
             adapter.filterByCategory(currentCategory, selectedItems)
@@ -99,7 +99,7 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
 
 
         //온보딩시 초기 입력 데이터 전송 fcm토큰 넣어야함
-        binding.completeBtn.setOnClickListener{
+        binding.completeBtn.setOnClickListener {
             sendDisasterType()
             Log.d("completeBtn","$totalItems")
             Log.d("completeBtn","$selectedItems")

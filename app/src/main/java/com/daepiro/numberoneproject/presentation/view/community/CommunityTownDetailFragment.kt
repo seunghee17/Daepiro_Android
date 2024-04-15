@@ -65,7 +65,7 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
         }
 
         binding.additional.setOnClickListener{
-            showBottomSheet()
+            //showBottomSheet()
             collectCommentDelete()
         }
         binding.likeBtn.setOnClickListener {

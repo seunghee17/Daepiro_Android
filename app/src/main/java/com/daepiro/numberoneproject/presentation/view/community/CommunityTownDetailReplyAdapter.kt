@@ -68,19 +68,20 @@ class CommunityTownDetailReplyAdapter(
             holder.likebtn.setOnClickListener {
                 val newIsLiked = !item.liked
                 item.liked = newIsLiked
-                //item.likeCount += if(newIsLiked) 1 else -1
                 holder.likebtn.setColorFilter(
                     ContextCompat.getColor(context, if (newIsLiked) R.color.orange_500 else R.color.secondary_300)
                 )
+                holder.likenum.text = item.likeCount.toString()
+                holder.likenum.visibility = if(item.likeCount > 0) View.VISIBLE else View.GONE
                 if(newIsLiked) {
-                    listener.onUnLikedClick(item.commentId)
-                } else {
                     listener.onLikedClick(item.commentId)
+                } else {
+                    listener.onUnLikedClick(item.commentId)
                 }
                 notifyItemChanged(position)
             }
             holder.additional.setOnClickListener{
-                listener.onAdditionalItemClick(item.commentId)
+                //listener.onAdditionalItemClick(item.commentId)
             }
             holder.rereply.setOnClickListener{
                 listener.onReplyClick(item.commentId)
