@@ -184,7 +184,7 @@
                                 style="@style/subtitle1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="지진 행동요령 체크리스트"
+                                android:text="호우 행동요령 체크리스트"
                                 android:textColor="@color/secondary_500" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
