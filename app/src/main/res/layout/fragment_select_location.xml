@@ -146,6 +146,7 @@
             android:textColor="@color/secondary_800"/>
 
         <ImageView
+            android:id="@+id/select2_img"
             android:layout_width="24dp"
             android:layout_height="24dp"
             app:layout_constraintRight_toRightOf="parent"
@@ -204,6 +205,7 @@
             android:textColor="@color/secondary_800"/>
 
         <ImageView
+            android:id="@+id/select3_img"
             android:layout_width="24dp"
             android:layout_height="24dp"
             app:layout_constraintRight_toRightOf="parent"

@@ -62,7 +62,7 @@
             style="@style/body1"
             android:textColor="@color/orange_500"
             android:text=""
-            android:visibility="visible"/>
+            android:visibility="gone"/>
         <ImageView
             android:id="@+id/rereply_btn"
             android:layout_width="24dp"

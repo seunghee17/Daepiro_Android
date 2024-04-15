@@ -45,6 +45,8 @@ class DisasterCommunitySubAdapter(
                 val color = ContextCompat.getColor(context,R.color.orange_500)
                 holder.good.setColorFilter(color)
                 holder.like.visibility = View.VISIBLE
+            } else {
+
             }
         }
     }

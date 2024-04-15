@@ -46,6 +46,7 @@ class GridviewAdapter(
         holder.itemView.setOnClickListener{
             item.isSelected = !item.isSelected
             //holder.itemView.isSelected = item.isSelected
+            original.find { it.disasterType == item.disasterType }?.isSelected = item.isSelected
             notifyItemChanged(position)
             listener.onItemClickListener(item.disasterType, item.isSelected)
         }

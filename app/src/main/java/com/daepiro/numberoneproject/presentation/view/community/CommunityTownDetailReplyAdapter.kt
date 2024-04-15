@@ -1,5 +1,6 @@
 package com.daepiro.numberoneproject.presentation.view.community
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import com.daepiro.numberoneproject.R
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyResponseItem
 
 class CommunityTownDetailReplyAdapter(
+    private val context: Context,
     private var items:List<CommunityTownReplyResponseItem> = listOf(),
     private val listener : onItemClickListener,
     private val getTimeDifference: (String) -> String
@@ -21,8 +23,8 @@ class CommunityTownDetailReplyAdapter(
         fun onAdditionalItemClick(commentid:Int)
         fun onReplyClick(commentid:Int)
 
-//        fun onLikedClick(commentid:Int)
-//        fun onUnLikedClick(commentid:Int)
+        fun onLikedClick(commentid:Int)
+        fun onUnLikedClick(commentid:Int)
     }
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
         val userInfo: TextView = itemView.findViewById(R.id.user_info)
@@ -49,12 +51,33 @@ class CommunityTownDetailReplyAdapter(
             val time = getTimeDifference(item.createdAt)
             holder.userInfo.text = "${item.authorNickName} ∙ ${time}"
             holder.content.text = item.content
-            holder.likenum.text = item.likeCount.toString()
-            if(item.likeCount > 0){
-                DrawableCompat.wrap(holder.likebtn.drawable).also{ wrappedDrawable->
-                    DrawableCompat.setTint(wrappedDrawable,color)
-                    holder.likebtn.setImageDrawable(wrappedDrawable)
+
+            holder.likenum.text = if(item.likeCount >0) {
+                holder.likenum.visibility = View.VISIBLE
+                item.likeCount.toString()
+            } else {
+                holder.likenum.visibility = View.GONE
+                ""
+            }
+            //현재상태 감지용
+            if(item.liked) {
+                holder.likebtn.setColorFilter(ContextCompat.getColor(context, R.color.orange_500))
+            } else {
+                holder.likebtn.setColorFilter(ContextCompat.getColor(context, R.color.secondary_300))
+            }
+            holder.likebtn.setOnClickListener {
+                val newIsLiked = !item.liked
+                item.liked = newIsLiked
+                //item.likeCount += if(newIsLiked) 1 else -1
+                holder.likebtn.setColorFilter(
+                    ContextCompat.getColor(context, if (newIsLiked) R.color.orange_500 else R.color.secondary_300)
+                )
+                if(newIsLiked) {
+                    listener.onUnLikedClick(item.commentId)
+                } else {
+                    listener.onLikedClick(item.commentId)
                 }
+                notifyItemChanged(position)
             }
             holder.additional.setOnClickListener{
                 listener.onAdditionalItemClick(item.commentId)
@@ -67,9 +90,6 @@ class CommunityTownDetailReplyAdapter(
 
     }
     fun updateList(newData:List<CommunityTownReplyResponseItem>){
-//        val startIndex = items.size
-//        items = items+newData
-//        notifyItemRangeChanged(startIndex,newData.size)
         items=newData
         notifyDataSetChanged()
     }

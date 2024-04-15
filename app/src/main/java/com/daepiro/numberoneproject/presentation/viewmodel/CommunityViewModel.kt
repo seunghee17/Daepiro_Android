@@ -372,6 +372,7 @@ class CommunityViewModel @Inject constructor(
             articlelikeUseCase(token, articleId)
                 .onSuccess {
                     _articleLike.value = it
+                    getTownDetail(articleId)
                 }
         }
     }
@@ -381,6 +382,7 @@ class CommunityViewModel @Inject constructor(
             articlecancelUseCase(token, articleId)
                 .onSuccess {
                     _articleLike.value = it
+                    getTownDetail(articleId)
                 }
         }
     }

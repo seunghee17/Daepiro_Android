@@ -209,7 +209,7 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
             if(isChecked) {
                 adapter.selectAllItems()
                 selectedItems.clear()
-                selectedItems.addAll(adapter.getItemList())
+                selectedItems.addAll(adapter.original)
             } else{
                 adapter.deselectAllItems()
                 selectedItems.clear()

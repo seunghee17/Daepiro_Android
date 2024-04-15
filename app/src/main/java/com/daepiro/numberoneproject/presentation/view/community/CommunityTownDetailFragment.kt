@@ -4,15 +4,9 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.daepiro.numberoneproject.R
@@ -21,17 +15,14 @@ import com.daepiro.numberoneproject.data.model.CommunityTownReplyRequestBody
 import com.daepiro.numberoneproject.databinding.FragmentCommunityTownDetailBinding
 import com.daepiro.numberoneproject.presentation.base.BaseFragment
 import com.daepiro.numberoneproject.presentation.util.Extensions.repeatOnStarted
-import com.daepiro.numberoneproject.presentation.view.MainActivity
 import com.daepiro.numberoneproject.presentation.viewmodel.CommunityViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBinding>(R.layout.fragment_community_town_detail) {
     val viewModel by activityViewModels<CommunityViewModel>()
     private lateinit var adapter:CommunityTownDetailImageAdapter
     private lateinit var adapterReply : CommunityTownDetailReplyAdapter
-    var likestatus = false
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,10 +74,8 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
             val currentLikedStatus = viewModel.townDetail.value.liked
             if(currentLikedStatus) {
                 viewModel.articleCancel(viewModel.townDetail.value.articleId)
-                Log.d("adjfakl","${viewModel.townDetail.value.liked}")
             } else {
                 viewModel.articleLike(viewModel.townDetail.value.articleId)
-                Log.d("adjfakl","${viewModel.townDetail.value.liked}")
             }
         }
     }
@@ -123,7 +112,9 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setUpReplyRecyclerView() {
-        adapterReply = CommunityTownDetailReplyAdapter(emptyList(), object : CommunityTownDetailReplyAdapter.onItemClickListener{
+        adapterReply = CommunityTownDetailReplyAdapter(
+            requireContext(), emptyList(),
+            object : CommunityTownDetailReplyAdapter.onItemClickListener {
             override fun onAdditionalItemClick(commentid: Int) {
                 showBottomSheet()
                 //deleteReply
@@ -140,7 +131,19 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
                     viewModel.writeRereply(articleId,commentid,data)
                 }
             }
-        },viewModel::getTimeDifference
+
+                override fun onLikedClick(commentid: Int) {
+                    viewModel.commentLike(commentid)
+                    collectReply()
+                    adapter.notifyDataSetChanged()
+                }
+
+                override fun onUnLikedClick(commentid: Int) {
+                    viewModel.commentUnLike(commentid)
+                    collectReply()
+                    adapter.notifyDataSetChanged()
+                }
+            },viewModel::getTimeDifference
         )
     }
 

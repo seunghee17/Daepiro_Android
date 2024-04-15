@@ -22,7 +22,7 @@ class OnboardingViewModel @Inject constructor(
     private val tokenManager: TokenManager,
     private val onBoardingUseCase: OnBoardingUseCase
 ) : ViewModel() {
-    private val _showSelectAddress = MutableLiveData<MutableList<String>>(mutableListOf())
+    val _showSelectAddress = MutableLiveData<MutableList<String>>(mutableListOf())
     val showSelectAddress:LiveData<MutableList<String>> = _showSelectAddress
 
     //api요청에 들어갈 데이터항목
@@ -33,11 +33,19 @@ class OnboardingViewModel @Inject constructor(
     var fcmToken:String =""
     var disasterType = listOf<DisasterTypeModel>()
 
-    fun updateShowAddress(address:String){
+    fun updateShowAddress(address: Map<String, String>, index: Int){
+        val address = "${address["lv1"]} ${address["lv2"]} ${address["lv3"]}".trim()
         val currentList = _showSelectAddress.value ?: mutableListOf()
-        currentList.add(address)
+
+        while (currentList.size <= index) {
+            currentList.add("")
+        }
+
+        currentList.set(index, address)
         _showSelectAddress.value = currentList
     }
+
+
 
     fun updateData(objectData: Map<String, String>) {
         val addressModel = AddresseModel(
@@ -45,8 +53,6 @@ class OnboardingViewModel @Inject constructor(
             lv2 = objectData["lv2"] ?: "",
             lv3 = objectData["lv3"] ?: ""
         )
-
-        // getAddressForApi 리스트에 생성된 AddresseModel 객체 추가
         getAddressForApi.add(addressModel)
     }
 

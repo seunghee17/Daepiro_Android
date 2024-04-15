@@ -8,8 +8,8 @@ data class CommunityTownReplyResponseItem(
     val commentId: Int=0,
     val content: String = "",
     val createdAt: String = "",
-    val likeCount: Int = 0,
-    val liked: Boolean=false,
+    var likeCount: Int,
+    var liked: Boolean=false,
     val modifiedAt: String="",
     val parentCommentId: Long?
 )
