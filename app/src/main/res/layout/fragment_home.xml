@@ -22,7 +22,6 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:orientation="vertical">
-
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,7 +50,6 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:tint="@color/secondary_300" />
-
 <!--                    <com.google.android.material.card.MaterialCardView-->
 <!--                        android:layout_width="6dp"-->
 <!--                        android:layout_height="6dp"-->
@@ -305,11 +303,15 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        style="@style/headline6"
+                        android:fontFamily="@font/pretendard_semibold"
+                        android:textSize="20sp"
+                        android:lineSpacingExtra="0dp"
+                        android:includeFontPadding="true"
                         android:textColor="@color/secondary_800"
                         android:text="@string/주변_대피소"/>
                     <TextView
                         android:layout_width="match_parent"
+                        style="@style/subtitle2"
                         android:layout_height="1dp"
                         android:layout_weight="1"/>
                     <TextView
