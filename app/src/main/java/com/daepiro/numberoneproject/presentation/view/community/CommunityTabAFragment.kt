@@ -1,5 +1,6 @@
 package com.daepiro.numberoneproject.presentation.view.community
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -49,7 +50,7 @@ class CommunityTabAFragment : BaseFragment<FragmentCommunityTabABinding>(R.layou
         repeatOnStarted {
             viewModel.disasterHome.collect { response ->
                 mainAdapter.updateList(response.situations)
-                //viewModel.getDisasterHome()
+                viewModel.getDisasterHome()
                 viewModel._isLoading.value = false
             }
         }
@@ -65,7 +66,5 @@ class CommunityTabAFragment : BaseFragment<FragmentCommunityTabABinding>(R.layou
         }
         dialog.show(requireActivity().supportFragmentManager, "dialogTag")
     }
-
-
 
 }

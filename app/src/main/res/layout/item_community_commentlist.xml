@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             style="@style/body1"
             android:textColor="@color/orange_500"
-            android:text="0"
+            android:text=""
             android:visibility="gone"/>
         <ImageView
             android:id="@+id/rereply_btn"

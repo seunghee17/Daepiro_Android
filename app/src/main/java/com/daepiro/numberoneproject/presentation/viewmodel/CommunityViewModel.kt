@@ -127,8 +127,8 @@ class CommunityViewModel @Inject constructor(
     private val _townList = MutableStateFlow(GetRegionResponse())
     val townList = _townList.asStateFlow()
 
-
-     var isLastLoaded = false
+    private val _commentLikeResponse = MutableStateFlow(CommentLikedResponseModel())
+    val commentLikeResponse = _commentLikeResponse.asStateFlow()
 
     fun updateAdditionalType(input:String){
         _additionalState.value= input
@@ -297,9 +297,6 @@ class CommunityViewModel @Inject constructor(
     val disasterHomeDetail = _disasterHomeDetail.asStateFlow()
 
     var disasterId:Int=0
-    //var likeStatus:Boolean = false
-    private val _likeStatus = MutableLiveData<Boolean>()
-    val likeStatus: LiveData<Boolean> = _likeStatus
 
     //재난상황 댓글 모두
     fun getDisasterDetail(sort:String,disasterId:Int){
@@ -317,30 +314,54 @@ class CommunityViewModel @Inject constructor(
         }
     }
 
-    fun postDisasterConversation(body: ConversationRequestBody){
+    fun postDisasterConversation(body: ConversationRequestBody, sort: String){
         viewModelScope.launch {
             val token = "Bearer ${tokenManager.accessToken.first()}"
             postDisasterConversationUseCase(token,body)
                 .onSuccess {
-                    getDisasterDetail("time", body.disasterId)
+                    getDisasterDetail(sort, body.disasterId)
                 }
         }
     }
 
-    fun conversationLike(conversationId: Int) {
+    fun conversationLike(conversationId: Int, disasterId: Int, sort: String) {
         viewModelScope.launch {
             val token = "Bearer ${tokenManager.accessToken.first()}"
             conversationLikeUseCase(token, conversationId)
                 .onSuccess {
+                    getDisasterDetail(sort, disasterId)
                 }
         }
     }
 
-    fun conversationCancel(conversationId: Int) {
+    fun conversationCancel(conversationId: Int, disasterId: Int, sort: String) {
         viewModelScope.launch {
             val token = "Bearer ${tokenManager.accessToken.first()}"
             conversationCancelUseCase(token, conversationId)
                 .onSuccess {
+                    getDisasterDetail(sort, disasterId)
+                }
+        }
+    }
+
+    fun commentLike(commentId: Int, articleId: Int = townDetail.value.articleId) {
+        viewModelScope.launch {
+            val token = "Bearer ${tokenManager.accessToken.first()}"
+            commentLikeUsecase(token, commentId)
+                .onSuccess {
+                    setReply(articleId)
+                    _commentLikeResponse.value = it
+                }
+        }
+    }
+
+    fun commentUnLike(commentId: Int, articleId: Int = townDetail.value.articleId) {
+        viewModelScope.launch {
+            val token = "Bearer ${tokenManager.accessToken.first()}"
+            commentLikeCancelUseCase(token, commentId)
+                .onSuccess {
+                    setReply(articleId)
+                    _commentLikeResponse.value = it
                 }
         }
     }
@@ -351,7 +372,7 @@ class CommunityViewModel @Inject constructor(
             articlelikeUseCase(token, articleId)
                 .onSuccess {
                     _articleLike.value = it
-                    _likeStatus.postValue(true)
+                    getTownDetail(articleId)
                 }
         }
     }
@@ -361,23 +382,9 @@ class CommunityViewModel @Inject constructor(
             articlecancelUseCase(token, articleId)
                 .onSuccess {
                     _articleLike.value = it
-                    _likeStatus.postValue(false)
+                    getTownDetail(articleId)
                 }
         }
-    }
-
-    //좋아요를 위해 추가함
-    fun updateLikeState(conversationId: Int, isLiked: Boolean) {
-        val updatedConversations = _disasterHomeDetail.value.conversations.map { conversation ->
-            if (conversation.conversationId == conversationId) {
-                // 해당 대화의 좋아요 상태를 업데이트합니다.
-                conversation.copy(isLiked = isLiked)
-            } else {
-                conversation
-            }
-        }
-        val updatedDetail = _disasterHomeDetail.value.copy(conversations = updatedConversations)
-        _disasterHomeDetail.value = updatedDetail
     }
 
     val tagText: StateFlow<String> = townDetail

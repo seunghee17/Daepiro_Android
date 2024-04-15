@@ -204,7 +204,7 @@
                     android:id="@+id/likeCnt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{String.valueOf(viewModel.townDetail.likeCount)}"
+                    android:text=""
                     android:textColor="@color/orange_500"
                     style="@style/body2"/>
                 <ImageView

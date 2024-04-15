@@ -13,7 +13,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:backgroundTint="@color/white"
+    android:background="@color/white"
     tools:context=".presentation.view.community.CommunityTabABottomSheetFragment">
 
         <TextView
@@ -61,7 +61,7 @@
 
         <Spinner
             android:id="@+id/spinner"
-            android:layout_width="65dp"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_spinner"
             android:layout_marginRight="20dp"

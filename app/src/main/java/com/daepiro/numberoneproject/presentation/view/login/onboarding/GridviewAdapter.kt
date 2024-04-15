@@ -17,7 +17,8 @@ class GridviewAdapter(
     interface onItemClickListener {
         fun onItemClickListener(disasterType: String, isSelected: Boolean)
     }
-    private var original : List<DisastertypeDataModel> = items.toList()
+    var original : List<DisastertypeDataModel> = items.toList()
+    private var currentCategory: String = ""
 
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
         val image: ImageView = itemView.findViewById(R.id.image)
@@ -44,34 +45,43 @@ class GridviewAdapter(
         holder.disasterType.text = item.disasterType
         holder.itemView.setOnClickListener{
             item.isSelected = !item.isSelected
-            holder.itemView.isSelected = item.isSelected
+            //holder.itemView.isSelected = item.isSelected
+            original.find { it.disasterType == item.disasterType }?.isSelected = item.isSelected
+            notifyItemChanged(position)
             listener.onItemClickListener(item.disasterType, item.isSelected)
         }
 
     }
-    fun filterByCategory(category:String){
-        items = if(category == ""){
-            original
-        }else {
+    fun filterByCategory(category:String, selectedItems: List<DisastertypeDataModel>){
+        currentCategory = category
+        items = if(category == "") {
+            original.toList()
+        } else {
             original.filter { it.category == category }
+        }
+        items.forEach { item ->
+            item.isSelected = selectedItems.any { it.disasterType == item.disasterType }
         }
         notifyDataSetChanged()
     }
-    fun updateList(newData:List<DisastertypeDataModel>){
-        items = newData
-        original= newData.toList()
-        Log.d("GridviewAdapter", "Data updated: $newData")
+    fun updateList(newData:List<DisastertypeDataModel>, selectedItems: List<DisastertypeDataModel>){
+        items = newData.map {newItem->
+            val isSelected = selectedItems.any {it.disasterType == newItem.disasterType}
+            newItem.copy(isSelected = isSelected)
+        }
         notifyDataSetChanged()
     }
 
     fun selectAllItems() {
-        items.forEach { it.isSelected = true }
+        original.forEach { it.isSelected = true }
+        items = original.filter { it.category == currentCategory || currentCategory.isEmpty() }
         notifyDataSetChanged()
     }
 
     // 모든 아이템 선택 해제
     fun deselectAllItems() {
-        items.forEach { it.isSelected = false }
+        original.forEach { it.isSelected = false }
+        items = original.filter { it.category == currentCategory || currentCategory.isEmpty() }
         notifyDataSetChanged()
     }
 }

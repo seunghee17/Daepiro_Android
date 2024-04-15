@@ -20,10 +20,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.flow.collectLatest
 
-//댓글 더보기 화면
 class CommunityTabABottomSheetFragment : BottomSheetDialogFragment() {
     private val viewModel: CommunityViewModel by activityViewModels()
     private var _binding:FragmentCommunityTabABottomSheetBinding? = null
+    private var currentTag:String=""
     private val binding get() = _binding!!
     private lateinit var adapter:CommunityTabABottomSheetAdapter
     var content:String= ""
@@ -61,10 +61,12 @@ class CommunityTabABottomSheetFragment : BottomSheetDialogFragment() {
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 val selectedItem = p0?.getItemAtPosition(p2).toString()
-                if(selectedItem == "인기순"){
+                if(selectedItem == "인기순") {
                     viewModel.getDisasterDetail("popularity", viewModel.id)
-                }else{
+                    currentTag = "popularity"
+                } else {
                     viewModel.getDisasterDetail("time", viewModel.id)
+                    currentTag = "time"
                 }
             }
 
@@ -96,6 +98,7 @@ class CommunityTabABottomSheetFragment : BottomSheetDialogFragment() {
 
 
         binding.closeBtn.setOnClickListener{
+            viewModel.getDisasterHome()
             dismiss()
         }
     }
@@ -110,13 +113,11 @@ class CommunityTabABottomSheetFragment : BottomSheetDialogFragment() {
             override fun onItemClickListener() {
             }
             override fun onLikeClicked(conversationId: Int) {
-                viewModel.conversationLike(conversationId)
-                //viewModel.updateLikeState(conversationId, true)
+                viewModel.conversationLike(conversationId,viewModel.id,currentTag)
             }
 
             override fun onUnlikeClicked(conversationId: Int) {
-                viewModel.conversationCancel(conversationId)
-                //viewModel.updateLikeState(conversationId, false)
+                viewModel.conversationCancel(conversationId,viewModel.id,currentTag)
             }
         })
         binding.recyclerview.adapter = adapter
@@ -124,14 +125,12 @@ class CommunityTabABottomSheetFragment : BottomSheetDialogFragment() {
 
     private fun setSpinner(){
         val spinnerData = listOf("최신순", "인기순")
-        val adapter = object: ArrayAdapter<String>(requireContext(), R.layout.item_spinner,spinnerData){
-            override fun getDropDownView(position:Int, convertView: View?, parent:ViewGroup):View{
-                val view = super.getDropDownView(position, convertView, parent)
-                view.setBackgroundColor(R.drawable.bg_dropdown)
-                return view
-            }
-        }
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_spinner_align_style,spinnerData)
+        adapter.setDropDownViewResource(R.layout.item_spinner)
         binding.spinner.adapter = adapter
+        binding.spinner.post{
+            binding.spinner.dropDownVerticalOffset = binding.spinner.height
+        }
     }
 
 
@@ -153,7 +152,7 @@ class CommunityTabABottomSheetFragment : BottomSheetDialogFragment() {
             disasterId = disasterId,
             content = content
         )
-        viewModel.postDisasterConversation(body).apply {
+        viewModel.postDisasterConversation(body, currentTag).apply {
             commentPostListener?.onCommentPasted()
         }
     }

@@ -55,6 +55,7 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
         binding.viewModel = viewModel
         adapter = CommunityWritingImageAdapter(mutableListOf())
         binding.imgList.adapter = adapter
+        viewModel._tagData.value = null
 
         adapter.onImageRemoved = { uri->
             imageUriList.remove(uri)
@@ -64,20 +65,23 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
             showBottomSheet()
         }
 
-        val checkbox = binding.checkLocationPermission
-        checkbox.setOnCheckedChangeListener{_,isChecked->
-            if(isChecked){
+        binding.checkLocationPermission.setOnCheckedChangeListener{_,isChecked->
+            if(isChecked) {
                 regionAgreementCheck = true
                 fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
                 getCurrentLocation()
-            }else{
+            } else {
                 regionAgreementCheck = false
                 longitudeForsend=0.0
                 latitudeForsend=0.0
             }
         }
 
-        binding.backBtn.setOnClickListener{
+        binding.checkContainer.setOnClickListener {
+            binding.checkLocationPermission.performClick()
+        }
+
+        binding.backBtn.setOnClickListener {
             findNavController().popBackStack()
         }
 
@@ -108,7 +112,7 @@ class CommunityTownWritingFragment : BaseFragment<FragmentCommunityTownWritingBi
 
         binding.addPhoto.setOnClickListener {
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestAllStoragePermission()
             }else{
                 requestReadStoragePermission()

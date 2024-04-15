@@ -49,7 +49,7 @@ class CommunityTabABottomSheetAdapter(
             holder.content.text = item.content
             subadapter.updateList(item.childs)
             holder.itemView.setOnClickListener{
-                listener.onItemClickListener()//그냥 배경만 활성화되는 정도
+                listener.onItemClickListener()
             }
 
             if(item.isLiked) {
@@ -57,17 +57,22 @@ class CommunityTabABottomSheetAdapter(
             } else {
                 holder.likeBtn.setColorFilter(ContextCompat.getColor(context, R.color.secondary_300))
             }
-            //api 수정되면 다시
             holder.likeBtn.setOnClickListener{
-                if(item.isLiked){
-                    listener.onUnlikeClicked(item.conversationId)
-                    holder.likeBtn.setColorFilter(ContextCompat.getColor(context, R.color.secondary_300))
-                } else {
-                    listener.onLikeClicked(item.conversationId)
-                    holder.likeBtn.setColorFilter(ContextCompat.getColor(context, R.color.orange_500))
-                }
+                val newIsLiked = !item.isLiked
+                item.isLiked = newIsLiked
+                holder.likeBtn.setColorFilter(
+                    ContextCompat.getColor(context, if (newIsLiked) R.color.orange_500 else R.color.secondary_300)
+                )
+                item.like += if(newIsLiked) 1 else -1
                 holder.likeNum.text = item.like.toString()
                 holder.likeNum.visibility = if(item.like>0) View.VISIBLE else View.GONE
+
+                if(newIsLiked){
+                    listener.onLikeClicked(item.conversationId)
+                } else {
+                    listener.onUnlikeClicked(item.conversationId)
+                }
+                notifyItemChanged(position)
             }
 
             holder.likeNum.text = item.like.toString()
