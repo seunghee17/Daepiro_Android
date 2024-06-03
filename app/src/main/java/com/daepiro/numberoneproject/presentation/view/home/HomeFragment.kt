@@ -53,6 +53,7 @@ import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Locale
+import kotlin.math.round
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
@@ -100,8 +101,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     }
 
     override fun setupInit() {
-        //로컬에 대피소 저장하기 위해 호출
-        shelterVM.getSheltersetLocal()
+        // 로컬에 대피소 저장하기 위해 호출
+//        shelterVM.getSheltersetLocal()
 
         requestPermission()
         setSheltersViewPager()
@@ -175,7 +176,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             } else if (R.id.chip_around_shelter_1 in checkedIds) {
                 shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "지진"))
             } else if (R.id.chip_around_shelter_2 in checkedIds) {
-                shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "지진"))
+                shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "수해"))
             } else if (R.id.chip_around_shelter_3 in checkedIds) {
                 shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "민방위"))
             }
@@ -186,8 +187,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             offscreenPageLimit = 1
             adapter = aroundShelterAdapter
 
-            setPageTransformer(MarginPageTransformer(32))
             setPadding(0,0,150,0)
+            setPageTransformer(MarginPageTransformer(dpToPx(28).toInt()))
         }
 
         aroundShelterAdapter.setItemClickListener(object : AroundShelterAdapter.OnItemClickListener {
@@ -346,5 +347,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
     private fun encodeAddress(address: String): String {
         return URLEncoder.encode(address, StandardCharsets.UTF_8.toString())
+    }
+
+    private fun dpToPx(dp: Int): Float {
+        val density = requireContext().resources.displayMetrics.density
+        return round(dp * density)
     }
 }
