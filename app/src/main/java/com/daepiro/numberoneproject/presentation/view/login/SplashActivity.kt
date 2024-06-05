@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.daepiro.numberoneproject.R
 import com.daepiro.numberoneproject.databinding.ActivitySplashBinding
 import com.daepiro.numberoneproject.presentation.base.BaseActivity
@@ -16,15 +18,18 @@ import com.daepiro.numberoneproject.presentation.util.Extensions.repeatOnStarted
 import com.daepiro.numberoneproject.presentation.util.TokenManager
 import com.daepiro.numberoneproject.presentation.view.MainActivity
 import com.daepiro.numberoneproject.presentation.view.networkerror.NetworkDialogFragment
+import com.daepiro.numberoneproject.presentation.viewmodel.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_splash) {
-    private val DURATION_TIME = 1500L    // 스플래시 화면 지연시간
+    private val DURATION_TIME = 6000L    // 스플래시 화면 지연시간
     private lateinit var cm : ConnectivityManager
+    val splashVM by viewModels<SplashViewModel>()
     @Inject lateinit var tokenManager: TokenManager
     private var isNetworkAvailable = false
 
@@ -51,6 +56,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(R.layout.activity_spl
             binding.ltSplash.cancelAnimation()
             checkAutoLogin()
         }, DURATION_TIME)
+        lifecycleScope.launch {
+            splashVM.getSheltersetLocal()
+        }
     }
 
 

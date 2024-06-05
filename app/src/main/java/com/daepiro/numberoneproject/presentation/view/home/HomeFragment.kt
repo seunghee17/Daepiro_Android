@@ -101,7 +101,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
     override fun setupInit() {
         //로컬에 대피소 저장하기 위해 호출
-        shelterVM.getSheltersetLocal()
+        //shelterVM.getSheltersetLocal()
 
         requestPermission()
         setSheltersViewPager()
