@@ -11,16 +11,17 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.daepiro.numberoneproject.R
+import com.daepiro.numberoneproject.data.model.ShelterEntity
 import com.daepiro.numberoneproject.data.model.ShelterRecyclerList
 
 class ShelterListAdapter : RecyclerView.Adapter<ShelterListAdapter.ViewHolder>() {
-    var shelters : List<ShelterRecyclerList> = emptyList()
+    var shelters : List<String> = emptyList()
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val fullAddress : TextView = itemView.findViewById(R.id.fullAddress)
         private val facilityFullName : TextView = itemView.findViewById(R.id.fullName)
-        fun bind(shelterData : ShelterRecyclerList){
-            fullAddress.text = shelterData.fullAddress
-            facilityFullName.text = shelterData.facilityFullName
+        fun bind(shelterData : String){
+            fullAddress.text = shelterData
+            facilityFullName.text = shelterData
         }
     }
 
@@ -50,7 +51,7 @@ class ShelterListAdapter : RecyclerView.Adapter<ShelterListAdapter.ViewHolder>()
 
         holder.itemView.findViewById<TextView>(R.id.copy_btn).setOnClickListener{
             val clipboard = holder.itemView.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("shelter_address", shelterData.fullAddress)
+            val clip = ClipData.newPlainText("shelter_address", shelterData)
             clipboard.setPrimaryClip(clip)
 
             //다이얼로그 표시
@@ -63,7 +64,7 @@ class ShelterListAdapter : RecyclerView.Adapter<ShelterListAdapter.ViewHolder>()
         return shelters.size
     }
 
-    fun updateShelters(newShelters:List<ShelterRecyclerList>){
+    fun updateShelters(newShelters:List<String>){
         shelters = newShelters
         notifyDataSetChanged()
     }

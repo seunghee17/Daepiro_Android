@@ -33,14 +33,13 @@ class CheckShelterActivity : BaseActivity<ActivityCheckShelterBinding>(R.layout.
         setupTabLayout()
 
         viewModel.currentList.asLiveData().observe(this, Observer { list->
-            val shelterToList = list.map{jsonObject ->
-                ShelterRecyclerList(
-                    fullAddress = jsonObject.getString("fullAddress") ,
-                    facilityFullName = jsonObject.getString("facilityFullName")
-                )
-            }
-            Log.d("checkshelter", "${viewModel.currentList}")
-            adapter.updateShelters(shelterToList)
+//            val shelterToList = list.map{data ->
+//                ShelterRecyclerList(
+//                    fullAddress = data ,
+//                    facilityFullName = data
+//                )
+//            }
+            adapter.updateShelters(list)
         })
 
         viewModel.shelterListUpdate.observe(this, Observer { shouldUpdate ->
@@ -96,10 +95,11 @@ class CheckShelterActivity : BaseActivity<ActivityCheckShelterBinding>(R.layout.
     }
 
     private fun updateShelterListBasedOnTab(tabPosition: Int?) {
-        viewModel.selectaddress.value?.let{address->
-            val shelterType = getShelterType(tabPosition)
-            viewModel.updateShelterList(this, "shelter_data.json", address, shelterType)
-        }
+//        viewModel.selectaddress.value?.let{address->
+//            val shelterType = getShelterType(tabPosition)
+//            viewModel.updateShelterList(viewModel.city.value ?: "", viewModel.district.value ?: "", viewModel.dong.value ?: "")
+//        }
+        viewModel.updateShelterList(viewModel.city.value ?: "", viewModel.district.value ?: "", viewModel.dong.value ?: "")
     }
 
 

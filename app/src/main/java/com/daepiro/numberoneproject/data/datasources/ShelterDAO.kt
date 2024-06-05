@@ -13,4 +13,7 @@ interface ShelterDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveShelters(shelters: List<ShelterEntity>)
+
+    @Query("SELECT fullAddress FROM shelters WHERE city = :city AND district = :district AND dong = :dong")
+    suspend fun getShelters(city: String, district: String, dong: String): List<String>
 }
