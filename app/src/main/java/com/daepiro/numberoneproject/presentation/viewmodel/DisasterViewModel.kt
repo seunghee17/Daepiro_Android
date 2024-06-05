@@ -1,5 +1,6 @@
 package com.daepiro.numberoneproject.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.daepiro.numberoneproject.data.model.DisasterRequestBody
@@ -38,6 +39,8 @@ class DisasterViewModel @Inject constructor(
                 .onSuccess {
                     _disasterMessage.value = it
                     disasterLoadingState.value = false
+                    Log.d("taag", it.toString())
+
                 }
                 .onFailure {
 

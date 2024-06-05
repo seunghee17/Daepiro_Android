@@ -34,14 +34,38 @@ class ShelterViewModel @Inject constructor(
     private val _shelterDataState = MutableLiveData<ApiResult<Unit>>()
     val shelterDataState: LiveData<ApiResult<Unit>> = _shelterDataState
 
+    val shelterList1 = MutableStateFlow(ShelterListResponse())
+    val shelterList2 = MutableStateFlow(ShelterListResponse())
+    val shelterList3 = MutableStateFlow(ShelterListResponse())
+    val shelterList4 = MutableStateFlow(ShelterListResponse())
+
     fun getAroundSheltersList(shelterRequestBody: ShelterRequestBody) {
         viewModelScope.launch {
             val token = "Bearer ${tokenManager.accessToken.first()}"
 
             aroundShelterUseCase(token, shelterRequestBody)
                 .onSuccess {
-                    _sheltersList.value = it
                     shelterLoadingState.emit(false)
+                    _sheltersList.value = it
+                }
+                .onFailure {
+
+                }
+        }
+    }
+
+    fun getAroundSheltersInDetailList(shelterRequestBody: ShelterRequestBody) {
+        viewModelScope.launch {
+            val token = "Bearer ${tokenManager.accessToken.first()}"
+
+            aroundShelterUseCase(token, shelterRequestBody)
+                .onSuccess {
+                    when(shelterRequestBody.shelterType) {
+                        null -> shelterList1.value = it
+                        "지진" -> shelterList2.value = it
+                        "수해" -> shelterList3.value = it
+                        "민방위" -> shelterList4.value = it
+                    }
                 }
                 .onFailure {
 

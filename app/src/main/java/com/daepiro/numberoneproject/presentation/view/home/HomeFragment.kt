@@ -53,6 +53,7 @@ import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.Locale
+import kotlin.math.round
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
@@ -101,7 +102,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
     override fun setupInit() {
         //로컬에 대피소 저장하기 위해 호출
-        //shelterVM.getSheltersetLocal()
+        shelterVM.getSheltersetLocal()
 
         requestPermission()
         setSheltersViewPager()
@@ -188,6 +189,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
             setPageTransformer(MarginPageTransformer(32))
             setPadding(0,0,150,0)
+            setPageTransformer(MarginPageTransformer(dpToPx(28).toInt()))
         }
 
         aroundShelterAdapter.setItemClickListener(object : AroundShelterAdapter.OnItemClickListener {
@@ -346,5 +348,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
     private fun encodeAddress(address: String): String {
         return URLEncoder.encode(address, StandardCharsets.UTF_8.toString())
+    }
+
+    private fun dpToPx(dp: Int): Float {
+        val density = requireContext().resources.displayMetrics.density
+        return round(dp * density)
     }
 }

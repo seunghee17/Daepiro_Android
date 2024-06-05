@@ -22,7 +22,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -40,25 +42,29 @@ class AroundShelterDetailFragment: BaseFragment<FragmentAroundShelterDetailBindi
         super.onViewCreated(view, savedInstanceState)
 
         userLocation = Pair(args.latitude.toDouble(), args.longitude.toDouble())
-        shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "민방위"))
         binding.tvAddress.text = args.address
+
+        shelterVM.getAroundSheltersInDetailList(ShelterRequestBody(userLocation.first, userLocation.second, null))
+        shelterVM.getAroundSheltersInDetailList(ShelterRequestBody(userLocation.first, userLocation.second, "지진"))
+        shelterVM.getAroundSheltersInDetailList(ShelterRequestBody(userLocation.first, userLocation.second, "수해"))
+        shelterVM.getAroundSheltersInDetailList(ShelterRequestBody(userLocation.first, userLocation.second, "민방위"))
 
         setAroundShelterRV()
 
         binding.ivBack.setOnClickListener {
             findNavController().navigateUp()
         }
-
     }
+
 
     override fun setupInit() {
         binding.tlCategory.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when(tab?.position) {
-                    0 -> shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, null))
-                    1 -> shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "지진"))
-                    2 -> shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "지진"))
-                    3 -> shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "민방위"))
+                    0 -> aroundShelterAllAdapter.setData(shelterVM.shelterList1.value.shelterList)
+                    1 -> aroundShelterAllAdapter.setData(shelterVM.shelterList2.value.shelterList)
+                    2 -> aroundShelterAllAdapter.setData(shelterVM.shelterList3.value.shelterList)
+                    3 -> aroundShelterAllAdapter.setData(shelterVM.shelterList4.value.shelterList)
                 }
             }
 
@@ -104,7 +110,10 @@ class AroundShelterDetailFragment: BaseFragment<FragmentAroundShelterDetailBindi
 
     override fun subscribeUi() {
         repeatOnStarted {
-            shelterVM.sheltersList.collectLatest {
+//            shelterVM.sheltersList.collectLatest {
+//                aroundShelterAllAdapter.setData(it.shelterList)
+//            }
+            shelterVM.shelterList1.collectLatest {
                 aroundShelterAllAdapter.setData(it.shelterList)
             }
         }
@@ -162,4 +171,5 @@ class AroundShelterDetailFragment: BaseFragment<FragmentAroundShelterDetailBindi
     private fun encodeAddress(address: String): String {
         return URLEncoder.encode(address, StandardCharsets.UTF_8.toString())
     }
+
 }
