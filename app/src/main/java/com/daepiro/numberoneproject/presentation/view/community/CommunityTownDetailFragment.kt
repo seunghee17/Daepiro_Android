@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
@@ -71,11 +72,15 @@ class CommunityTownDetailFragment : BaseFragment<FragmentCommunityTownDetailBind
         binding.likeBtn.setOnClickListener {
             collectContent()
             collectLike()
-            val currentLikedStatus = viewModel.townDetail.value.liked
-            if(currentLikedStatus) {
+            val currentLikedStatus = viewModel.townDetail.value.isLiked
+            if(currentLikedStatus==true) {
                 viewModel.articleCancel(viewModel.townDetail.value.articleId)
+                collectContent()
+                binding.likeCnt.text = viewModel.townDetail.value.likeCount.toString()
             } else {
                 viewModel.articleLike(viewModel.townDetail.value.articleId)
+                collectContent()
+                binding.likeCnt.text = viewModel.townDetail.value.likeCount.toString()
             }
         }
     }
