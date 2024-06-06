@@ -1,13 +1,9 @@
 package com.daepiro.numberoneproject.presentation.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.daepiro.numberoneproject.data.datasources.ShelterDatabase
 import com.daepiro.numberoneproject.data.model.ShelterListResponse
 import com.daepiro.numberoneproject.data.model.ShelterRequestBody
-import com.daepiro.numberoneproject.data.network.ApiResult
 import com.daepiro.numberoneproject.data.network.onFailure
 import com.daepiro.numberoneproject.data.network.onSuccess
 import com.daepiro.numberoneproject.domain.usecase.AroundShelterUseCase
@@ -28,11 +24,6 @@ class ShelterViewModel @Inject constructor(
     val sheltersList = _sheltersList.asStateFlow()
 
     val shelterLoadingState = MutableStateFlow(true)
-
-    private lateinit var db: ShelterDatabase
-
-    private val _shelterDataState = MutableLiveData<ApiResult<Unit>>()
-    val shelterDataState: LiveData<ApiResult<Unit>> = _shelterDataState
 
     val shelterList1 = MutableStateFlow(ShelterListResponse())
     val shelterList2 = MutableStateFlow(ShelterListResponse())
