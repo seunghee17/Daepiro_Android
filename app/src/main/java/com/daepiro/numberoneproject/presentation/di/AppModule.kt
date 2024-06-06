@@ -1,7 +1,9 @@
 package com.daepiro.numberoneproject.presentation.di
 
 import android.content.Context
+import androidx.room.Room
 import com.daepiro.numberoneproject.BuildConfig
+import com.daepiro.numberoneproject.data.datasources.ShelterDatabase
 import com.daepiro.numberoneproject.data.network.ApiResultCallAdapterFactory
 import com.daepiro.numberoneproject.data.network.ApiService
 import com.daepiro.numberoneproject.data.repositoryimpl.AlarmRepositoryImpl
@@ -131,5 +133,22 @@ object AppModule {
     fun provideFilesDir(@ApplicationContext context: Context): File {
         return context.filesDir
     }
-
 }
+
+@InstallIn(SingletonComponent::class)
+@Module
+object DBModule {
+    @Singleton
+    @Provides
+    fun provideAppDatabase(@ApplicationContext context: Context) =
+        Room.databaseBuilder(
+            context,
+            ShelterDatabase::class.java,
+            "shelter.db"
+        ).fallbackToDestructiveMigration()
+            .build()
+
+    @Provides
+    fun provideShelterDao(appDatabase: ShelterDatabase) = appDatabase.shelterDao()
+}
+

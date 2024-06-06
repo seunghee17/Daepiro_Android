@@ -143,7 +143,6 @@ class CommunityTabBFragment : BaseFragment<FragmentCommunityTabBBinding>(R.layou
         repeatOnStarted {
             viewModel.combinedData.collectLatest { data->
                 adapter.submitData(viewLifecycleOwner.lifecycle,data)
-
             }
         }
         }

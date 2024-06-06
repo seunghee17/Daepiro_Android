@@ -14,6 +14,8 @@ data class CommunityTownDetailData(
     val ownerMemberId: Int=0,
     val ownerProfileImageUrl : String="",
     val thumbNailImageUrl: String = "",
-    val liked : Boolean = true,
-    val title: String=""
+    val isLiked : Boolean = true,
+    val title: String="",
+    val regionLv2: String = "",
+    val commentCount: Int = 0
 )

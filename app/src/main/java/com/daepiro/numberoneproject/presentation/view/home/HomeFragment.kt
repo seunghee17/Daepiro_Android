@@ -1,31 +1,22 @@
 package com.daepiro.numberoneproject.presentation.view.home
 
 import android.annotation.SuppressLint
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
-import android.net.ConnectivityManager
-import android.net.Network
-import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.daepiro.numberoneproject.R
 import com.daepiro.numberoneproject.data.model.DisasterRequestBody
@@ -36,7 +27,6 @@ import com.daepiro.numberoneproject.presentation.util.Extensions.repeatOnStarted
 import com.daepiro.numberoneproject.presentation.util.Extensions.showToast
 import com.daepiro.numberoneproject.presentation.viewmodel.DisasterViewModel
 import com.daepiro.numberoneproject.presentation.viewmodel.ShelterViewModel
-import com.google.android.gms.common.util.ClientLibraryUtils.getPackageInfo
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -101,9 +91,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     }
 
     override fun setupInit() {
-        // 로컬에 대피소 저장하기 위해 호출
-//        shelterVM.getSheltersetLocal()
-
         requestPermission()
         setSheltersViewPager()
         setCheckListViewPager()
@@ -176,7 +163,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             } else if (R.id.chip_around_shelter_1 in checkedIds) {
                 shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "지진"))
             } else if (R.id.chip_around_shelter_2 in checkedIds) {
-                shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "수해"))
+                shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "지진"))
             } else if (R.id.chip_around_shelter_3 in checkedIds) {
                 shelterVM.getAroundSheltersList(ShelterRequestBody(userLocation.first, userLocation.second, "민방위"))
             }
@@ -187,6 +174,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             offscreenPageLimit = 1
             adapter = aroundShelterAdapter
 
+            setPageTransformer(MarginPageTransformer(32))
             setPadding(0,0,150,0)
             setPageTransformer(MarginPageTransformer(dpToPx(28).toInt()))
         }

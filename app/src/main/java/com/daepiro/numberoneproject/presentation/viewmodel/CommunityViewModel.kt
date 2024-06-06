@@ -7,8 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.daepiro.numberoneproject.data.model.ArticleLikeResponse
 import com.daepiro.numberoneproject.data.model.CommentLikedResponseModel
 import com.daepiro.numberoneproject.data.model.CommentWritingResponse
@@ -16,10 +14,8 @@ import com.daepiro.numberoneproject.data.model.CommunityDisasterDetailResponse
 import com.daepiro.numberoneproject.data.model.CommunityHomeDisasterResponse
 import com.daepiro.numberoneproject.data.model.CommunityRereplyRequestBody
 import com.daepiro.numberoneproject.data.model.CommunityTownDetailData
-import com.daepiro.numberoneproject.data.model.CommunityTownListModel
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyRequestBody
 import com.daepiro.numberoneproject.data.model.CommunityTownReplyResponse
-import com.daepiro.numberoneproject.data.model.Content
 import com.daepiro.numberoneproject.data.model.ConversationRequestBody
 import com.daepiro.numberoneproject.data.model.GetRegionResponse
 import com.daepiro.numberoneproject.data.network.onFailure

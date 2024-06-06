@@ -39,7 +39,7 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
         binding.viewModel = viewModel
         binding.allCategory.isSelected = true
         val data = setData()
-
+        viewModel.getSheltersetLocal()
         //일부 글자 색상 변경
         var fullText = binding.sub.text
         val spannable = SpannableString(fullText)
@@ -112,6 +112,7 @@ class SelectDisasterTypeFragment : BaseFragment<FragmentSelectDisasterTypeBindin
             )
             lifecycleScope.launch {
                 viewModel.postInitData(body)
+
             }
 
             val action = SelectDisasterTypeFragmentDirections.actionSelectDisasterTypeFragmentToGuideLastFragment()

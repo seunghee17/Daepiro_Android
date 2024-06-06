@@ -30,9 +30,10 @@ import com.daepiro.numberoneproject.data.model.LoginTokenResponse
 import com.daepiro.numberoneproject.data.model.OnlineResponse
 import com.daepiro.numberoneproject.data.model.RegisterFamilyResponse
 import com.daepiro.numberoneproject.data.model.SendSafetyResponse
-import com.daepiro.numberoneproject.data.model.ShelterData
+import com.daepiro.numberoneproject.data.model.ShelterEntity
 import com.daepiro.numberoneproject.data.model.ShelterListResponse
 import com.daepiro.numberoneproject.data.model.ShelterRequestBody
+import com.daepiro.numberoneproject.data.model.ShelterUrlResponse
 import com.daepiro.numberoneproject.data.model.SupportRequest
 import com.daepiro.numberoneproject.data.model.SupportResponse
 import com.daepiro.numberoneproject.data.model.TokenRequestBody
@@ -92,11 +93,17 @@ interface ApiService {
         @Body body: DisasterRequestBody
     ): ApiResult<DisasterResponse>
 
-    //대피소 전체 데이터 가진 링크 가져오기
+    //대피소 전체 데이터 가진 json파일
+    //곧 삭제될 코드
     @GET("/api/admin/address-info")
     suspend fun getShelters(
         @Header("Authorization") token:String
-    ): ApiResult<List<ShelterData>>
+    ): ApiResult<List<ShelterEntity>>
+
+    @GET("/api/shelters/init")
+    suspend fun getShelterFromUrl(
+        @Header("Authorization") token:String
+    ): ApiResult<ShelterUrlResponse>
 
 
     // 후원 목록 최신순 조회

@@ -135,16 +135,20 @@ class LocationSettingDialogFragment : BaseDialogFragment<FragmentLocationSetting
             }
         }
         else{ //마지막 선택시
-            var locationString = listOfNotNull(selectedItems[0],selectedItems[1],selectedItems[2]).joinToString(separator = " ")
+            //var locationString = listOfNotNull(selectedItems[0],selectedItems[1],selectedItems[2]).joinToString(separator = " ")
             var locationOnScreen = listOfNotNull(selectedItems[0],selectedItems[1]).joinToString(separator = " ")
-            viewModel._selectaddress.value = locationString
+            viewModel._city.value = selectedItems[0]
+            viewModel._district.value = selectedItems[1]
+            viewModel._dong.value = selectedItems[2]
+            //viewModel._selectaddress.value = locationString
             viewModel._onScreenAddress.value = locationOnScreen
             viewModel._isactive.value = true
             binding.complete.setOnClickListener{
                 viewModel._setUpdate.value = true
                 selectedItems.clear()
                 viewModel._isactive.value = false
-                listener?.onItemSelected(locationString)
+                //listener?.onItemSelected(locationString)
+                listener?.onItemSelected(locationOnScreen)
                 dismiss()
             }
         }
